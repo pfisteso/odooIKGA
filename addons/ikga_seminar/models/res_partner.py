@@ -43,5 +43,5 @@ class ResPartner(models.Model):
     #     record.grade_label = vals['grade_label']
     #     record.grade_number = vals['grade_number']
     #
-    #     return record
+        return record
 
