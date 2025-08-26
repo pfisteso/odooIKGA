@@ -1,0 +1,36 @@
+name: odoo_ikga
+
+services:
+  odoo:
+    image: odoo:18
+    depends_on:
+      - database
+    ports:
+      - "8069:8069"
+    environment:
+      HOST: database
+      USER: odoo
+      PASSWORD: odoo
+
+    volumes:
+      - odoo_web_data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+
+
+  database:
+    image: postgres:16
+
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+
+    volumes:
+      - database_data:/var/lib/postgresql/data/pgdata
+
+volumes:
+  database_data:
+  odoo_web_data:
