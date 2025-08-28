@@ -47,10 +47,22 @@ class CustomerPortal(CustomerPortal):
         })
         return request.render('ikga_website.portal_registration_form', values)
 
+    @http.route(['/my/registrations/delete/<int:reg_id>'], type='http', auth="user", website=True)
+    def portal_delete_registration(self, reg_id, **kw):
+        values = self._prepare_portal_layout_values()
+        ResPartner = request.env['res.partner']
+        registration = ResPartner.search([('id', '=', reg_id)])
+        if registration.create_uid == request.env.user.id:
+            registration.unlink()
+        return request.redirect('/my/registrations')
+
+
+
     @http.route(['/my/registrations/save'], type='http', auth="user", website=True)
     def portal_save_registration(self, registration_id: int, registration_name: str, registration_birthdate: date,
-                                 registration_seminar_participation: bool, registration_grade_number: int,
+                                 registration_grade_number: int,
                                  registration_grade_label:str, **kw):
+        registration_seminar_participation = True if 'registration_seminar_participation' in kw else False
         if int(registration_id) < 0:
             self._create_registration(name=registration_name, birthdate=registration_birthdate,
                                       seminar_participation=registration_seminar_participation,
@@ -67,8 +79,6 @@ class CustomerPortal(CustomerPortal):
         values = self._get_registration_values(name, birthdate, seminar_participation, grade_number, grade_label)
         ResPartner = request.env['res.partner']
         partner_record = ResPartner.create(values)
-        print(partner_record.partner_type)
-
 
     def _update_registration(self, id, name, birthdate, seminar_participation, grade_number, grade_label):
         values = self._get_registration_values(name, birthdate, seminar_participation, grade_number, grade_label)
@@ -77,7 +87,6 @@ class CustomerPortal(CustomerPortal):
         partner_record = ResPartner.search(domain=[['id', '=', id]])
         if partner_record:
             partner_record.write(values)
-        print(partner_record.partner_type)
 
     def _get_registration_values(self, name, birthdate, seminar_participation, grade_number, grade_label):
         values = {

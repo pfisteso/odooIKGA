@@ -29,21 +29,28 @@
                             <span t-field="reg.birthdate"/>
                         </td>
                         <td>
-                            <span t-field="reg.seminar_participation"/>
+                            <t t-if="reg.seminar_participation">
+                                <i class="fa fa-check"/>
+                            </t>
                         </td>
                         <td>
                             <span t-field="reg.grade_description"/>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-secondary"
-                                    onclick="window.location='/my/registrations/edit/{{reg.id}}'">
-                                <i class="fa fa-pencil"/>
-                            </button>
+                            <a t-att-href="'/my/registrations/edit/%s' % reg.id">
+                                <button type="button" class="btn btn-secondary">
+
+                                    <i class="fa fa-pencil"/>
+
+                                </button>
+                            </a>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-danger">
-                                <i class="fa fa-trash"/>
-                            </button>
+                            <a t-att-href="'/my/regisrations/delete/%s' % reg.id">
+                                <button type="button" class="btn btn-danger">
+                                    <i class="fa fa-trash"/>
+                                </button>
+                            </a>
                         </td>
                     </tr>
                 </t>
@@ -82,7 +89,7 @@
                             </div>
                             <div class="col col-4">
                                 <input id="registrationId" type="number" class="form-control from-control-plaintext"
-                                       value="registration.id" name="registration_id" readonly="True"/>
+                                       t-att-value="registration.id" name="registration_id" readonly="True"/>
                             </div>
                             <div class="col col-2"/>
                             <div class="col col-5"/>
@@ -97,7 +104,7 @@
                             </div>
                             <div class="col col-4">
                                 <input id="registrationName" type="text" class="form-control" placeholder="Enter Name"
-                                       name="registration_name" value="registration.name"/>
+                                       name="registration_name" t-att-value="registration.name"/>
                             </div>
 
                             <div class="col col-2"/>
@@ -107,18 +114,19 @@
                             </div>
                             <div class="col col-2">
                                 <input id="registrationSeminar" type="checkbox" class="form-check-input"
-                                       name="registration_seminar_participation" value="registration.seminar_participation"/>
+                                       name="registration_seminar_participation"
+                                       checked="registration.seminar_participation"/>
                             </div>
                         </div>
 
                         <!-- Birthdate | Grade -->
-                        <div class="row mt-2 mb-2">
+                        <div class="row mt-2">
                             <div class="col col-1">
                                 <label for="registrationBirthdate">Birthdate</label>
                             </div>
                             <div class="col col-4">
                                 <input id="registrationBirthdate" type="date" class="form-control"
-                                       name="registration_birthdate" value="registration.birthdate"/>
+                                       name="registration_birthdate" t-att-value="registration.birthdate"/>
                             </div>
 
                             <div class="col col-2"/>
@@ -128,24 +136,41 @@
                             </div>
                             <div class="col col-1">
                                 <select class="form-control form-select form-inline" id="registrationGradeNumber"
-                                        name="registration_grade_number" value="registration.grade_number">
-                                    <option value="1">1.</option>
-                                    <option value="2">2.</option>
-                                    <option value="3">3.</option>
-                                    <option value="4">4.</option>
-                                    <option value="5">5.</option>
-                                    <option value="6">6.</option>
-                                    <option value="7">7.</option>
-                                    <option value="8">8.</option>
-                                    <option value="9">9.</option>
+                                        name="registration_grade_number">
+                                    <option t-att-value="registration.grade_number" checked="True">
+                                        <span t-out="registration.grade_number"/>
+                                        <span>.</span>
+                                    </option>
+                                    <t t-foreach="[1, 2, 3, 4, 5, 6, 7, 8, 9]" t-as="i">
+                                        <option t-att-value="i">
+                                            <span t-out="i"/>
+                                            <span>.</span>
+                                        </option>
+                                    </t>
                                 </select>
                             </div>
                             <div class="col col-1">
                                 <select class="form-control form-select form-inline" id="registrationGradeLabel"
-                                        name="registration_grade_label" value="registration.grade_label">
-                                    <option value="kyu">Kyu</option>
-                                    <option value="dan">Dan</option>
+                                        name="registration_grade_label" t-att-value="registration.grade_label">
+                                    <t t-if="registration.grade_label == 'KYU'">
+                                        <option value="KYU" selected="True">Kyu</option>
+                                        <option value="DAN">Dan</option>
+                                    </t>
+                                    <t t-else="">
+                                        <option value="KYU">Kyu</option>
+                                        <option value="DAN" selected="True">Dan</option>
+                                    </t>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col col-5"/>
+                            <div class="col col-2"/>
+                            <div class="col col-5">
+                                <small id="gradeHelp" class="form-text text-muted">
+                                    If the person does not participate in the seminar, leave the default values (i.e.,
+                                    1. Kyu).
+                                </small>
                             </div>
 
                         </div>
@@ -190,7 +215,7 @@
                         </div>
 
                         <!-- Birthdate | Grade -->
-                        <div class="row mt-2 mb-2">
+                        <div class="row mt-2">
                             <div class="col col-1">
                                 <label for="registrationBirthdate">Birthdate</label>
                             </div>
@@ -221,9 +246,19 @@
                             <div class="col col-1">
                                 <select class="form-control form-select form-inline" id="registrationGradeLabel"
                                         name="registration_grade_label">
-                                    <option value="kyu">Kyu</option>
-                                    <option value="dan">Dan</option>
+                                    <option value="KYU">Kyu</option>
+                                    <option value="DAN">Dan</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col col-5"/>
+                            <div class="col col-2"/>
+                            <div class="col col-5">
+                                <small id="gradeHelp" class="form-text text-muted">
+                                    If the person does not participate in the seminar, leave the default values (i.e.,
+                                    1. Kyu).
+                                </small>
                             </div>
 
                         </div>
