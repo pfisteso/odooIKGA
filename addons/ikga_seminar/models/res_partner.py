@@ -34,7 +34,8 @@ class ResPartner(models.Model):
     @api.constrains('date_arrival', 'date_departure')
     def _constrain_date_arrival(self):
         for record in self:
-            if record.date_arrival > date.fromisoformat('2026-08-12') or record.date_departure < date.fromisoformat('2026-08-10'):
+            if record.date_arrival > date.fromisoformat('2026-08-12') or record.date_departure < date.fromisoformat(
+                    '2026-08-10'):
                 raise ValidationError('Arrival is only possible between August 10 and August 12, 2026')
             if record.date_departure < date.fromisoformat('2026-08-16'):
                 raise ValidationError('Departure is only possible as of August 16, 2026')
@@ -42,7 +43,8 @@ class ResPartner(models.Model):
     @api.depends('grade_label', 'grade_number')
     def _compute_grade_description(self):
         for record in self:
-            record.grade_description = '{}. {}'.format(str(record.grade_number), record.grade_label) if record.seminar_participation else ''
+            record.grade_description = '{}. {}'.format(str(record.grade_number),
+                                                       record.grade_label) if record.seminar_participation else ''
 
     # def _create_sale_order(self):
     #     pass
@@ -56,4 +58,3 @@ class ResPartner(models.Model):
 
         record.country_id = record.create_uid.country_id
         return record
-

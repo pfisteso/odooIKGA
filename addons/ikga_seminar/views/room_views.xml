@@ -77,7 +77,7 @@
         <menuitem id="ikga_room_root" name="Room Assignments" parent="ikga_menu_root" sequence="20"
                   groups="base.group_user"/>
         <menuitem id="ikge_room_menu" name="Hotel Rooms" parent="ikga_room_root" sequence="10"
-                 action="action_ikga_rooms" groups="base.group_user"/>
+                  action="action_ikga_rooms" groups="base.group_user"/>
         <!--        <menuitem id="ikga_room_menu" name="Assignments" parent="ikga_room_root" sequence="20"-->
         <!--                  action="action_ikga_room_assignments" groups="base.group_user"/>-->
     </data>

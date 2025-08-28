@@ -69,7 +69,7 @@
                   groups="base.group_user"/>
 
         <menuitem id="ikga_registration_menu" name="Registrations" parent="ikga_menu_root" sequence="10"
-                  action="action_ikga_registration"  groups="base.group_user"/>
+                  action="action_ikga_registration" groups="base.group_user"/>
 
     </data>
 </odoo>

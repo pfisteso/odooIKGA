@@ -17,7 +17,7 @@ class Room(models.Model):
                                      selection=[('SINGLE', 'Single Room'), ('DOUBLE', 'Double Room')])
 
     adults_ids = fields.One2many(string='Guests', comodel_name='ikga_seminar.room_assignment',
-                                inverse_name='room_id', domain='[["guest_category", "=", "ADULT"]]')
+                                 inverse_name='room_id', domain='[["guest_category", "=", "ADULT"]]')
     children_ids = fields.One2many(string='Children', comodel_name='ikga_seminar.room_assignment',
                                    inverse_name='room_id', domain='[["guest_category", "=", "CHILD"]]')
 
@@ -59,13 +59,13 @@ class Room(models.Model):
                 raise ValidationError('Cannot assign a child to a room without adults.')
 
 
-
 class RoomAssignment(models.Model):
     _name = 'ikga_seminar.room_assignment'
     _rec_name = 'rec_name'
 
     room_id = fields.Many2one('ikga_seminar.room', string='Room', required=True, index=True, ondelete='cascade')
-    guest_id = fields.Many2one('res.partner', string='Guest', required=True, index=True, unique=True, ondelete='cascade')
+    guest_id = fields.Many2one('res.partner', string='Guest', required=True, index=True, unique=True,
+                               ondelete='cascade')
     guest_category = fields.Selection(string='Category', selection=[('ADULT', 'Adult'), ('CHILD', 'Child')],
                                       required=True, default='ADULT')
 
