@@ -8,12 +8,13 @@
 
     "depends": [
         "contacts",
-        "sale",
+        "sale_management",
         "account"],
 
     "data": [
         "security/ir.model.access.csv",
-        "views/registration_views.xml"
+        "views/registration_views.xml",
+        "views/room_views.xml",
     ],
     "intallable": True,
     "application": True,
