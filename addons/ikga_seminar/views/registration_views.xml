@@ -40,7 +40,6 @@
                     </sheet>
                 </form>
             </field>
-
         </record>
 
         <!-- Actions and Menu Items -->
@@ -68,8 +67,9 @@
 
         <menuitem id="ikga_menu_root" name="IKGA Seminar" sequence="10"
                   groups="base.group_user"/>
-        <menuitem id="ikga_registration_menu" name="Registrations" sequence="10"
-                  action="action_ikga_registration"/>
+
+        <menuitem id="ikga_registration_menu" name="Registrations" parent="ikga_menu_root" sequence="10"
+                  action="action_ikga_registration"  groups="base.group_user"/>
 
     </data>
 </odoo>
