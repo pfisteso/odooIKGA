@@ -46,7 +46,7 @@
                             </a>
                         </td>
                         <td>
-                            <a t-att-href="'/my/regisrations/delete/%s' % reg.id">
+                            <a t-att-href="'/my/registrations/delete/%s' % reg.id">
                                 <button type="button" class="btn btn-danger">
                                     <i class="fa fa-trash"/>
                                 </button>

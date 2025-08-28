@@ -40,20 +40,26 @@ class CustomerPortal(CustomerPortal):
         values = self._prepare_portal_layout_values()
         ResPartner = request.env['res.partner']
         registration = ResPartner.search([('id', '=', reg_id)])
-
-        values.update({
-            'title': 'Edit Registration',
-            'registration': registration
-        })
-        return request.render('ikga_website.portal_registration_form', values)
+        if registration.create_uid == request.env.user:
+            values.update({
+                'title': 'Edit Registration',
+                'registration': registration
+            })
+            return request.render('ikga_website.portal_registration_form', values)
+        else:
+            # ToDo: add error message to values
+            return request.redirect('/my/registrations')
 
     @http.route(['/my/registrations/delete/<int:reg_id>'], type='http', auth="user", website=True)
     def portal_delete_registration(self, reg_id, **kw):
         values = self._prepare_portal_layout_values()
         ResPartner = request.env['res.partner']
         registration = ResPartner.search([('id', '=', reg_id)])
-        if registration.create_uid == request.env.user.id:
+        if registration.create_uid == request.env.user:
             registration.unlink()
+        else:
+            # ToDo: add error message to values
+            print("ABC")
         return request.redirect('/my/registrations')
 
 
