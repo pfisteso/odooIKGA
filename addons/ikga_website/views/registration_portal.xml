@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_registration_list" name="Registrations">
+        <t t-call="portal.portal_layout">
+            <h1>Your Registrations</h1>
+            <br/>
+            <button type="button" id="btn-create-registration" class="btn btn-primary btn-lg mb-5 mt-2 float-end"
+                    onclick="window.location='/my/registrations/create'">Create
+            </button>
+            <br/>
+            <t t-if="registrations" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Name</th>
+                        <th>Birthdate</th>
+                        <th>Seminar?</th>
+                        <th>Grade</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <t t-foreach="registrations" t-as="reg">
+                    <tr>
+                        <td>
+                            <span t-field="reg.name"/>
+                        </td>
+                        <td>
+                            <span t-field="reg.birthdate"/>
+                        </td>
+                        <td>
+                            <span t-field="reg.seminar_participation"/>
+                        </td>
+                        <td>
+                            <span t-field="reg.grade_description"/>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-secondary"
+                                    onclick="window.location='/my/registrations/edit/{{reg.id}}'">
+                                <i class="fa fa-pencil"/>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger">
+                                <i class="fa fa-trash"/>
+                            </button>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+            <t t-else="">
+                <p>You have not registered and participants yet.</p>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_registration_form" name="title">
+        <t t-call="portal.portal_layout">
+            <h1>
+                <t t-out="title"/>
+            </h1>
+            <form action="/my/registrations/save">
+
+                <!-- Personal Information | Seminar Registration -->
+                <div class="form-group mt-3 mb-3">
+                    <!-- Header -->
+                    <div class="row mt-2 mb-2">
+                        <div class="col col-5">
+                            <h2>Personal Information</h2>
+                        </div>
+                        <div class="col col-2"/>
+                        <div class="col col-5">
+                            <h2>Seminar Participation</h2>
+                        </div>
+                    </div>
+                    <!-- Body - Edit -->
+                    <t t-if="registration">
+                        <!-- ID -->
+                        <div class="row mt-2 mb-2">
+                            <div class="col col-1">
+                                <label for="registrationId">ID #</label>
+                            </div>
+                            <div class="col col-4">
+                                <input id="registrationId" type="number" class="form-control from-control-plaintext"
+                                       value="registration.id" name="registration_id" readonly="True"/>
+                            </div>
+                            <div class="col col-2"/>
+                            <div class="col col-5"/>
+
+
+                        </div>
+
+                        <!-- Name | Participation -->
+                        <div class="row mt-2 mb-2">
+                            <div class="col col-1">
+                                <label for="registrationName">Name</label>
+                            </div>
+                            <div class="col col-4">
+                                <input id="registrationName" type="text" class="form-control" placeholder="Enter Name"
+                                       name="registration_name" value="registration.name"/>
+                            </div>
+
+                            <div class="col col-2"/>
+
+                            <div class="col col-3">
+                                <label for="registrationSeminar">Participates in the Seminar?</label>
+                            </div>
+                            <div class="col col-2">
+                                <input id="registrationSeminar" type="checkbox" class="form-check-input"
+                                       name="registration_seminar_participation" value="registration.seminar_participation"/>
+                            </div>
+                        </div>
+
+                        <!-- Birthdate | Grade -->
+                        <div class="row mt-2 mb-2">
+                            <div class="col col-1">
+                                <label for="registrationBirthdate">Birthdate</label>
+                            </div>
+                            <div class="col col-4">
+                                <input id="registrationBirthdate" type="date" class="form-control"
+                                       name="registration_birthdate" value="registration.birthdate"/>
+                            </div>
+
+                            <div class="col col-2"/>
+
+                            <div class="col col-3">
+                                <label for="registrationGradeNumber">Grade (only for Seminar Participants)</label>
+                            </div>
+                            <div class="col col-1">
+                                <select class="form-control form-select form-inline" id="registrationGradeNumber"
+                                        name="registration_grade_number" value="registration.grade_number">
+                                    <option value="1">1.</option>
+                                    <option value="2">2.</option>
+                                    <option value="3">3.</option>
+                                    <option value="4">4.</option>
+                                    <option value="5">5.</option>
+                                    <option value="6">6.</option>
+                                    <option value="7">7.</option>
+                                    <option value="8">8.</option>
+                                    <option value="9">9.</option>
+                                </select>
+                            </div>
+                            <div class="col col-1">
+                                <select class="form-control form-select form-inline" id="registrationGradeLabel"
+                                        name="registration_grade_label" value="registration.grade_label">
+                                    <option value="kyu">Kyu</option>
+                                    <option value="dan">Dan</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </t>
+
+                    <t t-else="">
+                        <!-- ID -->
+                        <div class="row mt-2 mb-2">
+                            <div class="col col-1">
+                                <label for="registrationId">ID #</label>
+                            </div>
+                            <div class="col col-4">
+                                <input id="registrationId" type="number" class="form-control from-control-plaintext"
+                                       value="-1" name="registration_id" readonly="True"/>
+                            </div>
+                            <div class="col col-2"/>
+                            <div class="col col-5"/>
+
+
+                        </div>
+
+                        <!-- Name | Participation -->
+                        <div class="row mt-2 mb-2">
+                            <div class="col col-1">
+                                <label for="registrationName">Name</label>
+                            </div>
+                            <div class="col col-4">
+                                <input id="registrationName" type="text" class="form-control" placeholder="Enter Name"
+                                       name="registration_name"/>
+                            </div>
+
+                            <div class="col col-2"/>
+
+                            <div class="col col-3">
+                                <label for="registrationSeminar">Participates in the Seminar?</label>
+                            </div>
+                            <div class="col col-2">
+                                <input id="registrationSeminar" type="checkbox" class="form-check-input"
+                                       name="registration_seminar_participation"/>
+                            </div>
+                        </div>
+
+                        <!-- Birthdate | Grade -->
+                        <div class="row mt-2 mb-2">
+                            <div class="col col-1">
+                                <label for="registrationBirthdate">Birthdate</label>
+                            </div>
+                            <div class="col col-4">
+                                <input id="registrationBirthdate" type="date" class="form-control"
+                                       name="registration_birthdate"/>
+                            </div>
+
+                            <div class="col col-2"/>
+
+                            <div class="col col-3">
+                                <label for="registrationGradeNumber">Grade (only for Seminar Participants)</label>
+                            </div>
+                            <div class="col col-1">
+                                <select class="form-control form-select form-inline" id="registrationGradeNumber"
+                                        name="registration_grade_number">
+                                    <option value="1">1.</option>
+                                    <option value="2">2.</option>
+                                    <option value="3">3.</option>
+                                    <option value="4">4.</option>
+                                    <option value="5">5.</option>
+                                    <option value="6">6.</option>
+                                    <option value="7">7.</option>
+                                    <option value="8">8.</option>
+                                    <option value="9">9.</option>
+                                </select>
+                            </div>
+                            <div class="col col-1">
+                                <select class="form-control form-select form-inline" id="registrationGradeLabel"
+                                        name="registration_grade_label">
+                                    <option value="kyu">Kyu</option>
+                                    <option value="dan">Dan</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </t>
+                </div>
+
+
+                <button class="btn btn-primary" type="submit">Save</button>
+
+            </form>
+        </t>
+    </template>
+
+</odoo>

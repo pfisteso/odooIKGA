@@ -14,7 +14,7 @@ class ResPartner(models.Model):
     birthdate = fields.Date('Birthdate', required=True)
     seminar_participation = fields.Boolean('Participates in the Seminar?', default=False)
 
-    grade_label = fields.Selection(string='Label', selection=[('kyu', 'Kyu'), ('dan', 'Dan')])
+    grade_label = fields.Selection(string='Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')])
     grade_number = fields.Integer('Grade Number')
 
     grade_description = fields.Char('Grade Description', compute='_compute_grade_description')
@@ -35,13 +35,11 @@ class ResPartner(models.Model):
 
     def create(self, vals):
         record = super().create(vals)
-        partner_type = self.env.context.get('partner_type', 'user')
-        record.partner_type = partner_type
+        if 'partner_type' in vals:
+            record.partner_type = vals['partner_type']
+        else:
+            record.partner_type = self.env.context.get('partner_type', 'user')
+
         record.country_id = record.create_uid.country_id
-    #     record.birthdate = vals['birthdate']
-    #     record.seminar_participation = vals['seminar_participation']
-    #     record.grade_label = vals['grade_label']
-    #     record.grade_number = vals['grade_number']
-    #
         return record
 
