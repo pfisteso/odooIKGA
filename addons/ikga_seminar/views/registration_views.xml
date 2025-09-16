@@ -10,7 +10,7 @@
                     <field name="name"/>
                     <field name="birthdate"/>
                     <field name="country_id"/>
-                    <field name="seminar_participation"/>
+                    <field name="participates_in_seminar"/>
                     <field name="grade_description"/>
                 </list>
             </field>
@@ -30,13 +30,45 @@
                         </group>
                         <group>
                             <group>
-                                <field name="seminar_participation"/>
+                                <field name="participates_in_seminar"/>
                             </group>
                             <group>
                                 <field name="grade_number"/>
                                 <field name="grade_label"/>
                             </group>
                         </group>
+
+                        <notebook>
+                            <page string="Arrival &amp; Departure">
+                                <group>
+                                    <group>
+                                        <field name="interested_in_shuttle_service"/>
+                                        <field name="airport"/>
+                                    </group>
+                                    <group>
+                                        <field name="need_parking_lot"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Accommodation">
+                                <group>
+                                    <field name="room_preference"/>
+                                </group>
+                            </page>
+                            <page string="Food &amp; Beverage">
+                                <group>
+                                    <group>
+                                        <field name="is_vegetarian"/>
+                                        <field name="is_vegan"/>
+                                    </group>
+                                    <group>
+                                        <field name="has_allergies"/>
+                                        <field name="allergen_list"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+
                     </sheet>
                 </form>
             </field>

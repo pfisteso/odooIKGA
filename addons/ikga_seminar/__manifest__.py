@@ -7,14 +7,15 @@
     "description": "A collection of modules for the organization of the IKGA Event",
 
     "depends": [
+        "account",
         "contacts",
-        "sale_management",
-        "account"],
+        "stock",
+        "sale_management"
+    ],
 
     "data": [
         "security/ir.model.access.csv",
         "views/registration_views.xml",
-        "views/room_views.xml",
     ],
     "intallable": True,
     "application": True,

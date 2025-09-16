@@ -17,7 +17,6 @@ services:
       - ./config:/etc/odoo
       - ./addons:/mnt/extra-addons
 
-
   database:
     image: postgres:16
 
@@ -29,8 +28,8 @@ services:
 
 
     volumes:
-      - database_data:/var/lib/postgresql/data/pgdata
+      - database_data_dir:/var/lib/postgresql/data/pgdata
 
 volumes:
-  database_data:
+  database_data_dir:
   odoo_web_data:
