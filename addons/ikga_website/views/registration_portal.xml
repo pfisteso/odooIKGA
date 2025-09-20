@@ -34,7 +34,7 @@
                             <span t-field="reg.birthdate"/>
                         </td>
                         <td>
-                            <t t-if="reg.seminar_participation">
+                            <t t-if="reg.participates_in_seminar">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>

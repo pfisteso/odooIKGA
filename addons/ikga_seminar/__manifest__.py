@@ -9,13 +9,13 @@
     "depends": [
         "account",
         "contacts",
-        "stock",
         "sale_management"
     ],
 
     "data": [
         "security/ir.model.access.csv",
         "views/registration_views.xml",
+        "views/hotel_room_views.xml"
     ],
     "intallable": True,
     "application": True,

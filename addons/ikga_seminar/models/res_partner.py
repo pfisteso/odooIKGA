@@ -2,13 +2,14 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 AIRPORTS = [('EPA', 'EuroAirport Basel Mulhouse Freiburg'), ('ZRH', 'Zurich'), ('GVA', 'Geneva'), ('NAN', 'N/A')]
+ROOM_TYPES = [('SINGLE', 'Single Room'), ('DOUBLE', 'Double Room'), ('THREE BED', 'Three Bed Room'),
+              ('FOUR BED', 'Four Bed Room')]
+
 
 class ResPartner(models.Model):
     _name = 'res.partner'
     _description = 'Registration Entry for the IKGA Seminar'
     _inherit = 'res.partner'
-
-
 
     partner_type = fields.Selection(string='Partner Type',
                                     selection=[('user', 'User'), ('registration', 'Registration')],
@@ -18,17 +19,12 @@ class ResPartner(models.Model):
 
     # seminar information
     participates_in_seminar = fields.Boolean('Participates in the Seminar?', default=False)
-    grade_label = fields.Selection(string='Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')])
-    grade_number = fields.Integer('Grade Number')
-
-
+    grade_label = fields.Selection(string='Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')], default='KYU')
+    grade_number = fields.Integer('Grade Number', default=1)
 
     # accommodation
-    room_preference = fields.Selection(string='Room Preference', selection=[('SINGLE', 'Single Room'),
-                                                                            ('DOUBLE', 'Double Room'),
-                                                                            ('THREE BED', 'Three Bed Room'),
-                                                                            ('FOUR BED', 'Four Bed Room')],
-                                       required=True)
+    room_preference = fields.Selection(string='Room Preference', selection=ROOM_TYPES, required=True)
+    room_id = fields.Many2one(comodel_name='ikga.hotel_room', string='Hotel Room')
 
     # food & beverages
     is_vegetarian = fields.Boolean('Vegetarian', default=False)
@@ -49,8 +45,9 @@ class ResPartner(models.Model):
     @api.constrains('grade_number')
     def _constrain_grade_number(self):
         for record in self:
-            if record.grade_number < 1 or record.grade_number > 9:
-                raise ValidationError('Grade must be between 9. Kyu and 9. Dan')
+            if record.participates_in_seminar:
+                if record.grade_number < 1 or record.grade_number > 9:
+                    raise ValidationError('Grade must be between 9. Kyu and 9. Dan')
 
     @api.constrains('has_allergies', 'allergen_list')
     def _constrain_allergies(self):
@@ -62,8 +59,8 @@ class ResPartner(models.Model):
     def _compute_grade_description(self):
         for record in self:
             record.grade_description = '{}. {}'.format(str(record.grade_number),
-                                                       record.grade_label) if record.seminar_participation else ''
-
+                                                       record.grade_label) if record.participates_in_seminar else ''
+    @api.model
     def create(self, vals):
         # ToDo: thread lock
         # ToDo: create / adjust sale order - add a room to allocate room resources

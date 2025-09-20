@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List UI -->
+        <record id="view_hotel_room_list" model="ir.ui.view">
+            <field name="name">ikga.hotel_room.list</field>
+            <field name="model">ikga.hotel_room</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="hotel"/>
+                    <field name="capacity"/>
+                    <field name="is_full"/>
+                    <field name="country_manager_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form UI -->
+        <record id="view_hotel_room_form" model="ir.ui.view">
+            <field name="name">ikga.hotel_room.form</field>
+            <field name="model">ikga.hotel_room</field>
+            <field name="arch" type="xml">
+                <form string="Create / Edit Hotel Room">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="hotel"/>
+                                <field name="room_number"/>
+                            </group>
+                            <group>
+                                <field name="room_type"/>
+                                <field name="capacity"/>
+                                <field name="product_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="country_manager_id"/>
+                            <field name="n_guests"/>
+                            <field name="guest_ids"/>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Actions and Menu Items -->
+        <record id="action_ikga_hotel_room" model="ir.actions.act_window">
+            <field name="name">Hotel Rooms</field>
+            <field name="res_model">ikga.hotel_room</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="ikga_hotel_room_menu" name="Hotel Rooms" parent="ikga_menu_root" sequence="20"
+                  action="action_ikga_hotel_room" groups="base.group_user"/>
+
+    </data>
+</odoo>

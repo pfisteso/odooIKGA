@@ -4,9 +4,9 @@
     <template id="portal_registration_form" name="Create / View Registration">
         <t t-call="portal.portal_layout">
             <!-- Error Message if something went wrong while saving the registration -->
-            <t t-if="error">
+            <t t-if="err">
                 <div class="alert alert-danger">
-                    <t t-out="error"/>
+                    <t t-out="err"/>
                 </div>
             </t>
 
@@ -74,11 +74,11 @@
                         <div class="col col-3">
                             <t t-if="reg_seminar_participation">
                                 <input id="regSeminar" type="checkbox" class="form-check-input"
-                                       name="seminar_participation" checked="True"/>
+                                       name="participates_in_seminar" checked="True"/>
                             </t>
-                            <t t-esle="">
+                            <t t-else="">
                                 <input id="regSeminar" type="checkbox" class="form-check-input"
-                                       name="seminar_participation"/>
+                                       name="participates_in_seminar"/>
                             </t>
 
                         </div>
@@ -149,7 +149,7 @@
                         </div>
                         <!-- ToDo: evtl. verbreitern -->
                         <div class="col col-2">
-                            <select class="form-control form-select form-inline" id="regRoomType" name="room_type"
+                            <select class="form-control form-select form-inline" id="regRoomType" name="room_preference"
                                     required="True">
                                 <t t-foreach="available_room_types" t-as="room_type">
                                     <!-- ToDo: Does this work? -->

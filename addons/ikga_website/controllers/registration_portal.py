@@ -1,7 +1,9 @@
+import json
 from datetime import date, datetime
 
 from odoo import http
 from odoo.http import request
+from odoo.exceptions import UserError, MissingError
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
 
@@ -36,16 +38,16 @@ class CustomerPortal(CustomerPortal):
                                      ('DOUBLE', 'Double Room'),
                                      ('THREE BED', 'Three-Bed Room'),
                                      ('FOUR BED', 'Four-Bed Room')],
-            'airports': [('EPA', 'EuroAirport Basel Mulhouse Freiburg'), ('ZRH', 'Zurich'), ('GVA', 'Geneva'),
+            'airports': [('EPA', 'EuroAirport Basel Mulhouse Freiburg'),
+                         ('ZRH', 'Zurich'), ('GVA', 'Geneva'),
                          ('NAN', 'N/A')]
         })
 
         if 'reg_first_name' in kw:
-            # ToDo: load values from kw
-            pass
+            values.update(kw)
         else:
             values.update({
-                'error': False,
+                'err': False,
                 # personal information
                 'reg_first_name': '',
                 'reg_last_name': '',
@@ -55,7 +57,7 @@ class CustomerPortal(CustomerPortal):
                 'reg_grade_number': 1,
                 'reg_grade_label': 'KYU',
                 # room & board
-                'reg_room_preference': ' ',  # ToDo
+                'reg_room_preference': '',
                 'reg_is_vegetarian': False,
                 'reg_is_vegan': False,
                 'reg_has_allergies': False,
@@ -86,18 +88,6 @@ class CustomerPortal(CustomerPortal):
             # ToDo: add error message to values
             return request.redirect('/my/registrations')
 
-    @http.route(['/my/registrations/delete/<int:reg_id>'], type='http', auth="user", website=True)
-    def portal_delete_registration(self, reg_id, **kw):
-        values = self._prepare_portal_layout_values()
-        ResPartner = request.env['res.partner']
-        registration = ResPartner.search([('id', '=', reg_id)])
-        if registration.create_uid == request.env.user:
-            registration.unlink()
-        else:
-            # ToDo: add error message to values
-            print("ABC")
-        return request.redirect('/my/registrations')
-
     @http.route(['/my/registrations/save_create'], type='http', auth="user", website=True)
     def portal_save_registration(self, first_name: str, last_name: str, birthdate: date,
                                  grade_number: int, grade_label: str,
@@ -106,41 +96,137 @@ class CustomerPortal(CustomerPortal):
                                  participates_in_seminar: bool = False, is_vegetarian: bool = False,
                                  is_vegan: bool = False, has_allergies: bool = False, needs_shuttle: bool = False,
                                  needs_parking_lot: bool = False, **kw):
-        #     registration_seminar_participation = True if 'registration_seminar_participation' in kw else False
-        #     partner_type = 'registration'
-        #
-        #     if int(registration_id) < 0:
-        #         self._create_registration(name=registration_name, birthdate=registration_birthdate,
-        #                                   seminar_participation=registration_seminar_participation,
-        #                                   grade_number=registration_grade_number, grade_label=registration_grade_label)
-        #
-        #     else:
-        #         self._update_registration(id=registration_id, name=registration_name, birthdate=registration_birthdate,
-        #                                   seminar_participation=registration_seminar_participation,
-        #                                   grade_number=registration_grade_number, grade_label=registration_grade_label)
-        #
+
+        # prepare all values for the registration
+        participant_name = '{} {}'.format(first_name, last_name.upper())
+        registration_vals = {
+            'partner_type': 'registration',
+            'name': participant_name,
+            'birthdate': birthdate,
+            'participates_in_seminar': participates_in_seminar,
+
+            'room_preference': room_preference,
+            'is_vegetarian': is_vegetarian,
+            'is_vegan': is_vegan,
+            'has_allergies': has_allergies,
+            'interested_in_shuttle_service': needs_shuttle,
+            'need_parking_lot': needs_parking_lot,
+        }
+        if participates_in_seminar:
+            registration_vals.update({
+                'grade_number': grade_number,
+                'grade_label': grade_label,
+            })
+        if has_allergies:
+            registration_vals.update({'allergen_list': allergen_list})
+        if needs_shuttle:
+            registration_vals.update({
+                'airport': airport,
+                'arrival_datetime': arrival_datetime,
+                'departure_datetime': departure_datetime
+            })
+
+        # fetch or create sale order and products
+        sale_order = self._fetch_or_create_sale_order()
+        seminar_fee_product = self._fetch_seminar_fee()
+        try:
+            room, new_booking = self._fetch_room(room_preference)
+        except Exception as e:
+            return self.portal_create_registration(**{
+                'err': str(e),
+                # personal information
+                'reg_first_name': first_name,
+                'reg_last_name': last_name,
+                'reg_birthdate': birthdate,
+                # seminar
+                'reg_seminar_participation': participates_in_seminar,
+                'reg_grade_number': grade_number,
+                'reg_grade_label': grade_label,
+                # room & board
+                'reg_room_preference': room_preference,
+                'reg_is_vegetarian': is_vegetarian,
+                'reg_is_vegan': is_vegan,
+                'reg_has_allergies': has_allergies,
+                'reg_allergen_list': allergen_list,
+                # travel
+                'reg_shuttle_service': needs_shuttle,
+                'reg_airport': airport,
+                'reg_arrival_datetime': arrival_datetime,
+                'reg_departure_datetime': departure_datetime,
+                'reg_parking_lot': needs_parking_lot
+            })
+
+        registration = request.env['res.partner'].create(registration_vals)
+        if participates_in_seminar:
+            print('Add Seminar Participation to Sale Order')
+            # so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
+            #                                                 ('product_id', '=', seminar_fee_product.id)])
+            so_line = request.env['sale.order.line'].create({
+                'name': seminar_fee_product.product_tmpl_id.name + ': ' + participant_name,
+                'order_id': sale_order.id,
+                'product_id': seminar_fee_product.id,
+                'product_uom_qty': 1,
+            })
+
+        if new_booking:
+            so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
+                                                             ('product_id', '=', room.product_id.id)])
+            if len(so_line) > 0:
+                so_line.write({'product_uom_qty': so_line.product_uom_qty + 1})
+            else:
+                print('Add an additional Room to Sale Order')
+                so_line = request.env['sale.order.line'].create({
+                    'name': room.product_id.product_tmpl_id.name,
+                    'order_id': sale_order.id,
+                    'product_id': room.product_id.id,
+                    'product_uom_qty': 1,
+                })
+
         return request.redirect('/my/registrations')
 
-    def _create_registration(self, name, birthdate, seminar_participation, grade_number, grade_label):
-        values = self._get_registration_values(name, birthdate, seminar_participation, grade_number, grade_label)
-        ResPartner = request.env['res.partner']
-        partner_record = ResPartner.create(values)
+    def _fetch_or_create_sale_order(self):
+        country_manager = request.env.user.partner_id
+        # is there an "open" sale order?
+        sale_order = request.env['sale.order'].search([('partner_id', '=', country_manager.id),
+                                                       ('state', '=', 'draft')])
 
-    def _update_registration(self, id, name, birthdate, seminar_participation, grade_number, grade_label):
-        values = self._get_registration_values(name, birthdate, seminar_participation, grade_number, grade_label)
+        if len(sale_order) == 0:
+            sale_order = request.env['sale.order'].create({
+                'partner_id': country_manager.id
+            })
+        return sale_order
 
-        ResPartner = request.env['res.partner']
-        partner_record = ResPartner.search(domain=[['id', '=', id]])
-        if partner_record:
-            partner_record.write(values)
+    def _fetch_seminar_fee(self):
+        product_template = request.env['product.template'].search([('name', '=', 'Seminar Fee')])
+        if len(product_template) != 1:
+            raise Exception('The system is misconfigured. Please contact your administrator.')
+        product = request.env['product.product'].search([('product_tmpl_id', '=', product_template.id)])
+        if len(product) != 1:
+            raise Exception('The system is misconfigured. Please contact your administrator.')
+        return product
 
-    def _get_registration_values(self, name, birthdate, seminar_participation, grade_number, grade_label):
-        values = {
-            'name': name,
-            'birthdate': birthdate,
-            'seminar_participation': seminar_participation,
-            'grade_number': grade_number,
-            'grade_label': grade_label,
-            'partner_type': 'registration',
-        }
-        return values
+    def _fetch_room(self, room_preference):
+        country_manager = request.env.user.partner_id
+        # try to find an already booked with open capacity
+        booked_rooms = request.env['ikga.hotel_room'].search([('country_manager_id', '=', country_manager.id),
+                                                              ('room_type', '=', room_preference)])
+
+        for room in booked_rooms:
+            if not room.is_full:
+                room.write({'n_guests': room.n_guests + 1})
+                return room, False
+        else:
+            while True:
+                try:
+                    # look for an empty room
+                    room = request.env['ikga.hotel_room'].search([('room_type', '=', room_preference),
+                                                                  ('country_manager_id', '=', False)], limit=1)
+                    if not room or room is None or len(room) == 0:
+                        raise Exception(
+                            'Unfortunately, all rooms of the desired type are booked. Please select a different category.')
+
+                    room.write({'country_manager_id': country_manager.id, 'n_guests': 1})
+                    return room, True
+                except UserError as e:
+                    # retry
+                    print('retry')
