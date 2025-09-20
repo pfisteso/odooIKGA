@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_registration_form" name="Create / View Registration">
+        <t t-call="portal.portal_layout">
+            <!-- Error Message if something went wrong while saving the registration -->
+            <t t-if="error">
+                <div class="alert alert-danger">
+                    <t t-out="error"/>
+                </div>
+            </t>
+
+            <h1>
+                <t t-out="title"/>
+            </h1>
+
+            <form action="/my/registrations/save_create">
+                <!-- ToDo: reimplement all check boxes with t-if -->
+                <!-- Personal Information -->
+                <div class="form-group mt-5 mb-5">
+                    <!-- Header -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-5">
+                            <h2>Personal Information</h2>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+                    <!-- Name -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-1">
+                            <label for="regFirstName">Name</label>
+                        </div>
+                        <div class="col col-3">
+                            <input id="regFirstName" type="text" class="form-control" placeholder="First name"
+                                   name="first_name" t-att-value="reg_first_name" required="True"/>
+                        </div>
+                        <div class="col col-3">
+                            <input id="regLastName" type="text" class="form-control" placeholder="Last Name"
+                                   name="last_name" t-att-value="reg_last_name" required="True"/>
+                        </div>
+
+                        <div class="col col-3"/>
+
+                    </div>
+                    <!-- Birthdate -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-1">
+                            <label for="regBirthdate">Birthdate</label>
+                        </div>
+                        <div class="col col-3">
+                            <input id="regBirthdate" type="date" class="form-control"
+                                   name="birthdate" t-att-value="reg_birthdate" required="True"/>
+                        </div>
+
+                        <div class="col col-5"/>
+
+                    </div>
+                </div>
+
+                <!-- Seminar Registration -->
+                <div class="form-group mt-5 mb-5">
+                    <!-- Header -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-5">
+                            <h2>Seminar</h2>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+                    <!-- Participation -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-3">
+                            <label for="regSeminar">Do you participate in the seminar?</label>
+                        </div>
+                        <div class="col col-3">
+                            <t t-if="reg_seminar_participation">
+                                <input id="regSeminar" type="checkbox" class="form-check-input"
+                                       name="seminar_participation" checked="True"/>
+                            </t>
+                            <t t-esle="">
+                                <input id="regSeminar" type="checkbox" class="form-check-input"
+                                       name="seminar_participation"/>
+                            </t>
+
+                        </div>
+
+                        <div class="col col-5"/>
+
+
+                    </div>
+                    <!-- Grade -->
+                    <div class="row mt-3">
+                        <div class="col col-3">
+                            <label for="regGradeNumber">Grade (only for Seminar Participants)</label>
+                        </div>
+                        <div class="col col-1">
+                            <select class="form-control form-select form-inline" id="regGradeNumber"
+                                    name="grade_number">
+                                <option t-att-value="reg_grade_number" checked="True">
+                                    <span t-out="reg_grade_number"/>
+                                    <span>.</span>
+                                </option>
+                                <t t-foreach="[1, 2, 3, 4, 5, 6, 7, 8, 9]" t-as="i">
+                                    <option t-att-value="i">
+                                        <span t-out="i"/>
+                                        <span>.</span>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col col-1">
+                            <select class="form-control form-select form-inline" id="regGradeLabel"
+                                    name="grade_label" t-att-value="reg_grade_label">
+                                <t t-if="reg_grade_label == 'KYU'">
+                                    <option value="KYU" selected="True">Kyu</option>
+                                    <option value="DAN">Dan</option>
+                                </t>
+                                <t t-else="">
+                                    <option value="KYU">Kyu</option>
+                                    <option value="DAN" selected="True">Dan</option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col col-10">
+                            <small id="gradeHelp" class="form-text text-muted">
+                                If the person does not participate in the seminar, leave the default values (i.e.,
+                                1. Kyu).
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room and Board -->
+                <div class="form-group mt-5 mb-5">
+                    <!-- Header -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-5">
+                            <h2>Room &amp; Board</h2>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+
+                    <!-- Room Type -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-2">
+                            <label for="regRoomType">Room Type</label>
+                        </div>
+                        <!-- ToDo: evtl. verbreitern -->
+                        <div class="col col-2">
+                            <select class="form-control form-select form-inline" id="regRoomType" name="room_type"
+                                    required="True">
+                                <t t-foreach="available_room_types" t-as="room_type">
+                                    <!-- ToDo: Does this work? -->
+                                    <t t-if="room_type[0] == reg_room_preference">
+                                        <option t-att-value="room_type[0]" selected="True">
+                                            <span t-out="room_type[1]"/>
+                                        </option>
+                                    </t>
+                                    <t t-else="">
+                                        <option t-att-value="room_type[0]">
+                                            <span t-out="room_type[1]"/>
+                                        </option>
+                                    </t>
+
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Vegetarian / Vegan / Allergies -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-1">
+                            <label for="regVegetarian">Vegetarian?</label>
+                        </div>
+                        <div class="col col-1">
+                            <t t-if="reg_is_vegetarian">
+                                <input id="regVegetarian" type="checkbox" class="form-check-input"
+                                       name="is_vegetarian" checked="True"/>
+                            </t>
+                            <t t-else="">
+                                <input id="regVegetarian" type="checkbox" class="form-check-input"
+                                       name="is_vegetarian"/>
+                            </t>
+
+                        </div>
+                        <div class="col col-1">
+                            <label for="regVegan">Vegan?</label>
+                        </div>
+                        <div class="col col-1">
+                            <t t-if="reg_is_vegan">
+                                <input id="regVegan" type="checkbox" class="form-check-input"
+                                       name="is_vegan" checked="True"/>
+                            </t>
+                            <t t-else="">
+                                <input id="regVegan" type="checkbox" class="form-check-input"
+                                       name="is_vegan"/>
+                            </t>
+                        </div>
+                        <div class="col col-2">
+                            <label for="regAllergies">Food Allergies?</label>
+                        </div>
+                        <div class="col col-1">
+                            <t t-if="reg_has_allergies">
+                                <input id="regAllergies" type="checkbox" class="form-check-input"
+                                       name="has_allergies" checked="True"/>
+                            </t>
+                            <t t-else="">
+                                <input id="regAllergies" type="checkbox" class="form-check-input"
+                                       name="has_allergies"/>
+                            </t>
+
+                        </div>
+                        <div class="col col-3"/>
+                    </div>
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-7">
+                            <input id="regAllergens" type="text" class="form-control" name="allergen_list"
+                                   placeholder="If any, please write down all allergens"
+                                   t-att-value="reg_allergen_list"/>
+                        </div>
+
+                        <div class="col col-3"/>
+                    </div>
+                </div>
+
+                <!-- Travel Information -->
+                <div class="form-group mt-5 mb-5">
+                    <!-- Header -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-5">
+                            <h2>Travel</h2>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+
+                    <!-- Parking Lot -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-3">
+                            <label for="regParkingLot">Do you need a parking lot?</label>
+                        </div>
+                        <div class="col col-1">
+                            <t t-if="reg_parking_lot">
+                                <input id="regParkingLot" type="checkbox" class="form-check-input"
+                                       name="needs_parking_lot" checked="True"/>
+                            </t>
+                            <t t-else="">
+                                <input id="regParkingLot" type="checkbox" class="form-check-input"
+                                       name="needs_parking_lot"/>
+                            </t>
+                        </div>
+                        <div class="col col-6"/>
+                    </div>
+
+                    <!-- Shuttle Service -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-3">
+                            <label for="regShuttle">Are you interested in our shuttle service?</label>
+                        </div>
+                        <div class="col col-1">
+                            <t t-if="reg_shuttle_service">
+                                <input id="regShuttle" type="checkbox" class="form-check-input"
+                                       name="needs_shuttle" checked="True"/>
+                            </t>
+                            <t t-else="">
+                                <input id="regShuttle" type="checkbox" class="form-check-input"
+                                       name="needs_shuttle"/>
+                            </t>
+                        </div>
+                        <div class="col col-6"/>
+                    </div>
+
+                    <!-- Airport -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-1">
+                            <label for="regAirport">Airport</label>
+                        </div>
+                        <div class="col col-4">
+                            <select class="form-control form-select form-inline" id="regArrivalAirport" name="airport">
+                                <t t-foreach="airports" t-as="a">
+                                    <!-- ToDo: Does this work? -->
+                                    <t t-if="a[0] == reg_airport">
+                                        <option t-att-value="a[0]" selected="True">
+                                            <span t-out="a[1]"/>
+                                        </option>
+                                    </t>
+                                    <t t-else="">
+                                        <option t-att-value="a[0]">
+                                            <span t-out="a[1]"/>
+                                        </option>
+                                    </t>
+
+                                </t>
+                            </select>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+
+                    <!-- Arrival -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-1">
+                            <label for="regArrivalTime">Arrival</label>
+                        </div>
+                        <div class="col col-4">
+                            <input id="regArrivalTime" type="datetime-local" class="form-control"
+                                   name="arrival_datetime" t-att-value="reg_arrival_datetime"/>
+                        </div>
+                        <div class="col col-5"/>
+
+                    </div>
+                    <!-- Departure -->
+                    <div class="row mt-3 mb-3">
+                        <div class="col col-1">
+                            <label for="regDepartureTime">Departure</label>
+                        </div>
+                        <div class="col col-4">
+                            <input id="regDepartureTime" type="datetime-local" class="form-control"
+                                   name="departure_datetime" t-att-value="reg_departure_datetime"/>
+                        </div>
+                        <div class="col col-5"/>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Save</button>
+
+            </form>
+        </t>
+    </template>
+
+
+</odoo>

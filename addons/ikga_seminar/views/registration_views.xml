@@ -44,6 +44,8 @@
                                     <group>
                                         <field name="interested_in_shuttle_service"/>
                                         <field name="airport"/>
+                                        <field name="arrival_datetime"/>
+                                        <field name="departure_datetime"/>
                                     </group>
                                     <group>
                                         <field name="need_parking_lot"/>

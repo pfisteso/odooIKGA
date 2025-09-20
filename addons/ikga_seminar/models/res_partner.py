@@ -1,11 +1,14 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+AIRPORTS = [('EPA', 'EuroAirport Basel Mulhouse Freiburg'), ('ZRH', 'Zurich'), ('GVA', 'Geneva'), ('NAN', 'N/A')]
 
 class ResPartner(models.Model):
     _name = 'res.partner'
     _description = 'Registration Entry for the IKGA Seminar'
     _inherit = 'res.partner'
+
+
 
     partner_type = fields.Selection(string='Partner Type',
                                     selection=[('user', 'User'), ('registration', 'Registration')],
@@ -18,7 +21,7 @@ class ResPartner(models.Model):
     grade_label = fields.Selection(string='Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')])
     grade_number = fields.Integer('Grade Number')
 
-    grade_description = fields.Char('Grade Description', compute='_compute_grade_description')
+
 
     # accommodation
     room_preference = fields.Selection(string='Room Preference', selection=[('SINGLE', 'Single Room'),
@@ -33,12 +36,15 @@ class ResPartner(models.Model):
     has_allergies = fields.Boolean('Food Allergies', default=False)
     allergen_list = fields.Text('Allergen')
 
-    # arrival
+    # travel
     interested_in_shuttle_service = fields.Boolean(string='Shuttle Service', default=False)
-    airport = fields.Selection(string='Airport', selection=[('LFSB', 'EuroAirport Basel Mulhouse Freiburg'),
-                                                            ('ZRH', 'Zurich'), ('GVA', 'Geneva')])
+    airport = fields.Selection(string='Airport', selection=AIRPORTS, default='NAN')
+    arrival_datetime = fields.Datetime(string='ETA')
+    departure_datetime = fields.Datetime(string='DST')
     need_parking_lot = fields.Boolean('Parking Lot', default=False)
 
+    # computed amd related fields
+    grade_description = fields.Char('Grade Description', compute='_compute_grade_description')
 
     @api.constrains('grade_number')
     def _constrain_grade_number(self):

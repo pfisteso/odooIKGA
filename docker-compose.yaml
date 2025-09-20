@@ -28,8 +28,8 @@ services:
 
 
     volumes:
-      - database_data_dir:/var/lib/postgresql/data/pgdata
+      - db_data:/var/lib/postgresql/data/pgdata
 
 volumes:
-  database_data_dir:
+  db_data:
   odoo_web_data:

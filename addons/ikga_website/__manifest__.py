@@ -12,7 +12,8 @@
 
     "data": [
         "security/ir.model.access.csv",
-        "views/registration_portal.xml"
+        "views/registration_portal.xml",
+        "views/registration_form.xml"
     ],
     "intallable": True,
     "application": False,
