@@ -6,6 +6,11 @@ from odoo.http import request
 from odoo.exceptions import UserError, MissingError
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
+ROOM_TYPES = [('SINGLE', 'Single Room'),
+              ('DOUBLE', 'Double Room'),
+              ('THREE BED', 'Three-Bed Room'),
+              ('FOUR BED', 'Four-Bed Room')]
+
 
 class CustomerPortal(CustomerPortal):
 
@@ -34,10 +39,7 @@ class CustomerPortal(CustomerPortal):
         # ToDo: check available rooms and add to values
         values.update({
             'title': 'New Registration',
-            'available_room_types': [('SINGLE', 'Single Room'),
-                                     ('DOUBLE', 'Double Room'),
-                                     ('THREE BED', 'Three-Bed Room'),
-                                     ('FOUR BED', 'Four-Bed Room')],
+            'available_room_types': self._fetch_available_room_types(),
             'airports': [('EPA', 'EuroAirport Basel Mulhouse Freiburg'),
                          ('ZRH', 'Zurich'), ('GVA', 'Geneva'),
                          ('NAN', 'N/A')]
@@ -51,7 +53,7 @@ class CustomerPortal(CustomerPortal):
                 # personal information
                 'reg_first_name': '',
                 'reg_last_name': '',
-                'reg_birthdate': date.fromisoformat('1900-01-01'),
+                'reg_birthdate': date.fromisoformat('2000-01-01'),
                 # seminar
                 'reg_seminar_participation': False,
                 'reg_grade_number': 1,
@@ -90,9 +92,8 @@ class CustomerPortal(CustomerPortal):
 
     @http.route(['/my/registrations/save_create'], type='http', auth="user", website=True)
     def portal_save_registration(self, first_name: str, last_name: str, birthdate: date,
-                                 grade_number: int, grade_label: str,
-                                 room_preference: str, allergen_list: str, airport: str,
-                                 arrival_datetime: datetime, departure_datetime: datetime,
+                                 grade_number: int, grade_label: str, room_preference: str, allergen_list: str,
+                                 airport: str, arrival_datetime: datetime, departure_datetime: datetime,
                                  participates_in_seminar: bool = False, is_vegetarian: bool = False,
                                  is_vegan: bool = False, has_allergies: bool = False, needs_shuttle: bool = False,
                                  needs_parking_lot: bool = False, **kw):
@@ -232,3 +233,20 @@ class CustomerPortal(CustomerPortal):
                 except UserError as e:
                     # retry
                     print('retry')
+
+    def _fetch_available_room_types(self):
+        available_rooms = []
+        country_manager = request.env.user.partner_id
+        for rt in ROOM_TYPES:
+            rooms = request.env['ikga.hotel_room'].search([('room_type', '=', rt[0]),
+                                                           ('country_manager_id', '=', False)])
+            if rooms and rooms is not None and len(rooms) > 0:
+                available_rooms.append(rt)
+            else:
+                rooms = request.env['ikga.hotel_room'].search([('room_type', '=', rt[0]),
+                                                               ('country_manager_id', '=', country_manager.id)])
+                for r in rooms:
+                    if not r.is_full:
+                        available_rooms.append(rt)
+                        break
+        return available_rooms
