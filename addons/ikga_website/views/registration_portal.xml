@@ -21,39 +21,60 @@
                         <th>Birthdate</th>
                         <th>Seminar?</th>
                         <th>Grade</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th>Room Type</th>
+                        <th>Vegan/Vegetarian/Allergies</th>
+                        <th>Parking</th>
+                        <th>Shuttle</th>
+                        <th>View/Edit</th>
                     </tr>
                 </thead>
                 <t t-foreach="registrations" t-as="reg">
                     <tr>
+                        <!-- Name -->
                         <td>
                             <span t-field="reg.name"/>
                         </td>
+                        <!-- Birthdate -->
                         <td>
                             <span t-field="reg.birthdate"/>
                         </td>
+                        <!-- Seminar -->
                         <td>
                             <t t-if="reg.participates_in_seminar">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>
+                        <!-- Grade -->
                         <td>
                             <span t-field="reg.grade_description"/>
                         </td>
+                        <!-- Room Type -->
+                        <td>
+                            <span t-field="reg.room_preference"/>
+                        </td>
+                        <!-- VVA -->
+                        <td>
+                            <t t-if="reg.is_vegetarian or reg.is_vegan or reg.has_allergies">
+                                <i class="fa fa-check"/>
+                            </t>
+                        </td>
+                        <!-- Parking -->
+                        <td>
+                            <t t-if="reg.need_parking_lot">
+                                <i class="fa fa-check"/>
+                            </t>
+                        </td>
+                        <!-- Shuttle -->
+                        <td>
+                            <t t-if="reg.interested_in_shuttle_service">
+                                <i class="fa fa-check"/>
+                            </t>
+                        </td>
+                        <!-- Edit -->
                         <td>
                             <a t-att-href="'/my/registrations/edit/%s' % reg.id">
                                 <button type="button" class="btn btn-secondary">
-
                                     <i class="fa fa-pencil"/>
-
-                                </button>
-                            </a>
-                        </td>
-                        <td>
-                            <a t-att-href="'/my/registrations/delete/%s' % reg.id">
-                                <button type="button" class="btn btn-danger">
-                                    <i class="fa fa-trash"/>
                                 </button>
                             </a>
                         </td>
