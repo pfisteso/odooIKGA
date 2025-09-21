@@ -17,6 +17,7 @@ class ResPartner(models.Model):
     birthdate = fields.Date('Birthdate', required=True)
 
     # seminar information
+    country_manager_id = fields.Many2one('res.partner', string='Country Manager',)
     participates_in_seminar = fields.Boolean('Participates in the Seminar?', default=False)
     grade_label = fields.Selection(string='Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')], default='KYU')
     grade_number = fields.Integer('Grade Number', default=1)
@@ -34,12 +35,18 @@ class ResPartner(models.Model):
     # travel
     interested_in_shuttle_service = fields.Boolean(string='Shuttle Service', default=False)
     airport = fields.Selection(string='Airport', selection=AIRPORTS, default='NAN')
-    arrival_datetime = fields.Datetime(string='ETA')
-    departure_datetime = fields.Datetime(string='DST')
+    arrival_datetime = fields.Datetime(string='Arrival')
+    departure_datetime = fields.Datetime(string='Departure')
     need_parking_lot = fields.Boolean('Parking Lot', default=False)
 
+    # compute price amounts
+    currency_id = fields.Many2one('res.currency', string='Currency')
+    amount_seminar = fields.Monetary('Seminar Fee', currency_field='currency_id')
+    amount_hotel_room = fields.Monetary('Room & Board', currency_field='currency_id')
+    amount_total = fields.Monetary('Total', currency_field='currency_id', compute='_compute_amount_total')
+
     # computed amd related fields
-    grade_description = fields.Char('Grade Description', compute='_compute_grade_description')
+    grade_description = fields.Char('Grade', compute='_compute_grade_description')
 
     @api.constrains('grade_number')
     def _constrain_grade_number(self):
@@ -59,15 +66,21 @@ class ResPartner(models.Model):
         for record in self:
             record.grade_description = '{}. {}'.format(str(record.grade_number),
                                                        record.grade_label) if record.participates_in_seminar else ''
+
+    @api.depends('amount_seminar', 'amount_hotel_room')
+    def _compute_amount_total(self):
+        for rec in self:
+            rec.amount_total = rec.amount_seminar + rec.amount_hotel_room
+
     @api.model
     def create(self, vals):
-        # ToDo: thread lock
-        # ToDo: create / adjust sale order - add a room to allocate room resources
         record = super().create(vals)
-        if 'partner_type' in vals:
-            record.partner_type = vals['partner_type']
-        else:
+        if 'partner_type' not in vals:
             record.partner_type = self.env.context.get('partner_type', 'user')
 
-        record.country_id = record.create_uid.country_id
+        if 'country_manager_id' not in vals:
+            record.country_manager_id = record.create_uid.partner_id
+        if 'country_id' not in vals:
+            record.country_id = record.country_manager_id.country_id
+        record.currency_id = record.create_uid.company_id.currency_id
         return record
