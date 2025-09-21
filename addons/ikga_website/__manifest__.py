@@ -12,6 +12,7 @@
 
     "data": [
         "security/ir.model.access.csv",
+        "security/rules.xml",
         "views/registration_portal.xml",
         "views/registration_form.xml"
     ],

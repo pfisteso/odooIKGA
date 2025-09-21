@@ -1,1 +1,10 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+portal_res_partner,portal_res_partner,base.model_res_partner,base.group_portal,1,1,1,0
+portal_hotel_room,portal_hotel_room,ikga_seminar.model_ikga_hotel_room,base.group_portal,1,1,0,0
+portal_ir_sequence,portal_ir_sequence,base.model_ir_sequence,base.group_portal,1,1,1,1
+portal_sale_order,portal_sale_order,sale.model_sale_order,base.group_portal,1,1,1,0
+portal_sale_order_line,portal_sale_order_line,sale.model_sale_order_line,base.group_portal,1,1,1,0
+portal_product_template,portal_product_template,sale.model_product_template,base.group_portal,1,0,0,0
+portal_product_product,portal_product_product,sale.model_product_product,base.group_portal,1,0,0,0
+portal_ir_actions_report,portal_ir_actions_report,base.model_ir_actions_report,base.group_portal,1,0,0,0
+portal_snailmail_letter,portal_snailmail_letter,snailmail.model_snailmail_letter,base.group_portal,1,0,1,0

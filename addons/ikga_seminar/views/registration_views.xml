@@ -54,7 +54,12 @@
                             </page>
                             <page string="Accommodation">
                                 <group>
-                                    <field name="room_preference"/>
+                                    <group>
+                                        <field name="room_preference"/>
+                                    </group>
+                                    <group>
+                                        <field name="room_id"/>
+                                    </group>
                                 </group>
                             </page>
                             <page string="Food &amp; Beverage">

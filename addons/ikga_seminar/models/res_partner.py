@@ -8,7 +8,6 @@ ROOM_TYPES = [('SINGLE', 'Single Room'), ('DOUBLE', 'Double Room'), ('THREE BED'
 
 class ResPartner(models.Model):
     _name = 'res.partner'
-    _description = 'Registration Entry for the IKGA Seminar'
     _inherit = 'res.partner'
 
     partner_type = fields.Selection(string='Partner Type',
