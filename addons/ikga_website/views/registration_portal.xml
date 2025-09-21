@@ -5,13 +5,20 @@
         <t t-call="portal.portal_layout">
             <h1>Your Registrations</h1>
             <br/>
-            <div class="mt-2 mb-2">
-                <button type="button" id="btn-create-registration" class="btn btn-primary btn-lg"
-                        onclick="window.location='/my/registrations/create'">
-                    <i class="fa fa-plus"/>
-                    <span>New</span>
-                </button>
-            </div>
+            <t t-if="registration_closed">
+                <div class="alert alert-warning">
+                    The registration period is over.
+                </div>
+            </t>
+            <t t-else="">
+                <div class="mt-2 mb-2">
+                    <button type="button" id="btn-create-registration" class="btn btn-primary btn-lg"
+                            onclick="window.location='/my/registrations/create'">
+                        <i class="fa fa-plus"/>
+                        <span>New</span>
+                    </button>
+                </div>
+            </t>
 
             <br/>
             <t t-if="registrations" t-call="portal.portal_table">

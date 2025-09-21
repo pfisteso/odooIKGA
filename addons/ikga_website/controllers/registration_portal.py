@@ -11,11 +11,15 @@ ROOM_TYPES = [('SINGLE', 'Single Room'),
               ('THREE BED', 'Three-Bed Room'),
               ('FOUR BED', 'Four-Bed Room')]
 
+DEADLINE = datetime.fromisoformat('2026-03-01T05:00:00')
+
 
 class CustomerPortal(CustomerPortal):
 
     @http.route(['/my/registrations'], type='http', auth="user", website=True)
     def portal_my_registrations(self, **kw):
+        ts = datetime.now()
+
         values = self._prepare_portal_layout_values()
         user = request.env.user
 
@@ -29,14 +33,20 @@ class CustomerPortal(CustomerPortal):
 
         values.update({
             'registrations': registrations,
+            'registration_closed': ts > DEADLINE,
         })
 
         return request.render('ikga_website.portal_registration_list', values)
 
     @http.route(['/my/registrations/create'], type='http', auth="user", website=True)
     def portal_create_registration(self, **kw):
+        # check deadline
+        ts = datetime.now()
+        if ts > DEADLINE:
+            return request.redirect('/my/registrations')
+
         values = self._prepare_portal_layout_values()
-        # ToDo: check available rooms and add to values
+
         values.update({
             'title': 'New Registration',
             'available_room_types': self._fetch_available_room_types(),
@@ -75,20 +85,6 @@ class CustomerPortal(CustomerPortal):
 
         return request.render('ikga_website.portal_registration_form', values)
 
-        # @http.route(['/my/registrations/edit/<int:reg_id>'], type='http', auth="user", website=True)
-        # def portal_edit_registration(self, reg_id, **kw):
-        #    values = self._prepare_portal_layout_values()
-        ResPartner = request.env['res.partner']
-        registration = ResPartner.search([('id', '=', reg_id)])
-        if registration.create_uid == request.env.user:
-            values.update({
-                'title': 'Edit Registration',
-                'registration': registration
-            })
-            return request.render('ikga_website.portal_registration_form', values)
-        else:
-            # ToDo: add error message to values
-            return request.redirect('/my/registrations')
 
     @http.route(['/my/registrations/save_create'], type='http', auth="user", website=True)
     def portal_save_registration(self, first_name: str, last_name: str, birthdate: date,
