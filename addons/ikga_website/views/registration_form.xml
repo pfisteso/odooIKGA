@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="portal_registration_form" name="Create / View Registration">
+    <template id="portal_registration_form" name="Create Registration">
         <t t-call="portal.portal_layout">
             <!-- Error Message if something went wrong while saving the registration -->
             <t t-if="err">
@@ -15,7 +15,6 @@
             </h1>
 
             <form action="/my/registrations/save_create">
-                <!-- ToDo: reimplement all check boxes with t-if -->
                 <!-- Personal Information -->
                 <div class="form-group mt-5 mb-5">
                     <!-- Header -->
@@ -92,7 +91,7 @@
                         <div class="col col-3">
                             <label for="regGradeNumber">Grade (only for Seminar Participants)</label>
                         </div>
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <select class="form-control form-select form-inline" id="regGradeNumber"
                                     name="grade_number">
                                 <option t-att-value="reg_grade_number" checked="True">
@@ -107,7 +106,7 @@
                                 </t>
                             </select>
                         </div>
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <select class="form-control form-select form-inline" id="regGradeLabel"
                                     name="grade_label" t-att-value="reg_grade_label">
                                 <t t-if="reg_grade_label == 'KYU'">
@@ -148,7 +147,7 @@
                             <label for="regRoomType">Room Type</label>
                         </div>
                         <!-- ToDo: evtl. verbreitern -->
-                        <div class="col col-2">
+                        <div class="col col-5">
                             <select class="form-control form-select form-inline" id="regRoomType" name="room_preference"
                                     required="True">
                                 <t t-foreach="available_room_types" t-as="room_type">
@@ -167,10 +166,11 @@
                                 </t>
                             </select>
                         </div>
+                        <div class="col col-3"/>
                     </div>
 
                     <!-- Vegetarian / Vegan / Allergies -->
-                    <div class="row mt-3 mb-3">
+                    <div class="row mt-3 mb-1">
                         <div class="col col-1">
                             <label for="regVegetarian">Vegetarian?</label>
                         </div>
@@ -215,7 +215,7 @@
                         <div class="col col-3"/>
                     </div>
 
-                    <div class="row mt-3 mb-3">
+                    <div class="row mt-1 mb-3">
                         <div class="col col-7">
                             <input id="regAllergens" type="text" class="form-control" name="allergen_list"
                                    placeholder="If any, please write down all allergens"
@@ -236,25 +236,7 @@
                         <div class="col col-5"/>
                     </div>
 
-                    <!-- Parking Lot -->
-                    <div class="row mt-3 mb-3">
-                        <div class="col col-3">
-                            <label for="regParkingLot">Do you need a parking lot?</label>
-                        </div>
-                        <div class="col col-1">
-                            <t t-if="reg_parking_lot">
-                                <input id="regParkingLot" type="checkbox" class="form-check-input"
-                                       name="needs_parking_lot" checked="True"/>
-                            </t>
-                            <t t-else="">
-                                <input id="regParkingLot" type="checkbox" class="form-check-input"
-                                       name="needs_parking_lot"/>
-                            </t>
-                        </div>
-                        <div class="col col-6"/>
-                    </div>
-
-                    <!-- Shuttle Service -->
+                    <!-- Shuttle Service | Parking Lot -->
                     <div class="row mt-3 mb-3">
                         <div class="col col-3">
                             <label for="regShuttle">Are you interested in our shuttle service?</label>
@@ -269,7 +251,20 @@
                                        name="needs_shuttle"/>
                             </t>
                         </div>
-                        <div class="col col-6"/>
+                        <div class="col col-2">
+                            <label for="regParkingLot">Do you need a parking lot?</label>
+                        </div>
+                        <div class="col col-1">
+                            <t t-if="reg_parking_lot">
+                                <input id="regParkingLot" type="checkbox" class="form-check-input"
+                                       name="needs_parking_lot" checked="True"/>
+                            </t>
+                            <t t-else="">
+                                <input id="regParkingLot" type="checkbox" class="form-check-input"
+                                       name="needs_parking_lot"/>
+                            </t>
+                        </div>
+                        <div class="col col-3"/>
                     </div>
 
                     <!-- Airport -->
@@ -277,7 +272,7 @@
                         <div class="col col-1">
                             <label for="regAirport">Airport</label>
                         </div>
-                        <div class="col col-4">
+                        <div class="col col-3">
                             <select class="form-control form-select form-inline" id="regArrivalAirport" name="airport">
                                 <t t-foreach="airports" t-as="a">
                                     <!-- ToDo: Does this work? -->
@@ -295,7 +290,7 @@
                                 </t>
                             </select>
                         </div>
-                        <div class="col col-5"/>
+                        <div class="col col-6"/>
                     </div>
 
                     <!-- Arrival -->
@@ -303,11 +298,11 @@
                         <div class="col col-1">
                             <label for="regArrivalTime">Arrival</label>
                         </div>
-                        <div class="col col-4">
+                        <div class="col col-3">
                             <input id="regArrivalTime" type="datetime-local" class="form-control"
                                    name="arrival_datetime" t-att-value="reg_arrival_datetime"/>
                         </div>
-                        <div class="col col-5"/>
+                        <div class="col col-6"/>
 
                     </div>
                     <!-- Departure -->
@@ -315,11 +310,11 @@
                         <div class="col col-1">
                             <label for="regDepartureTime">Departure</label>
                         </div>
-                        <div class="col col-4">
+                        <div class="col col-3">
                             <input id="regDepartureTime" type="datetime-local" class="form-control"
                                    name="departure_datetime" t-att-value="reg_departure_datetime"/>
                         </div>
-                        <div class="col col-5"/>
+                        <div class="col col-6"/>
                     </div>
                 </div>
 
@@ -328,6 +323,5 @@
             </form>
         </t>
     </template>
-
 
 </odoo>

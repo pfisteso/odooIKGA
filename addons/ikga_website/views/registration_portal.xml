@@ -18,14 +18,14 @@
                 <thead>
                     <tr class="active">
                         <th>Name</th>
-                        <th>Birthdate</th>
-                        <th>Seminar?</th>
+                        <th style="text-align: center">Seminar?</th>
                         <th>Grade</th>
                         <th>Room Type</th>
-                        <th>Vegan/Vegetarian/Allergies</th>
-                        <th>Parking</th>
-                        <th>Shuttle</th>
-                        <th>View/Edit</th>
+                        <th style="text-align: center">Vegan/Vegetarian</th>
+                        <th style="text-align: center">Allergies</th>
+                        <th style="text-align: center">Parking</th>
+                        <th style="text-align: center">Shuttle</th>
+
                     </tr>
                 </thead>
                 <t t-foreach="registrations" t-as="reg">
@@ -34,12 +34,8 @@
                         <td>
                             <span t-field="reg.name"/>
                         </td>
-                        <!-- Birthdate -->
-                        <td>
-                            <span t-field="reg.birthdate"/>
-                        </td>
                         <!-- Seminar -->
-                        <td>
+                        <td style="text-align: center">
                             <t t-if="reg.participates_in_seminar">
                                 <i class="fa fa-check"/>
                             </t>
@@ -52,31 +48,31 @@
                         <td>
                             <span t-field="reg.room_preference"/>
                         </td>
-                        <!-- VVA -->
-                        <td>
-                            <t t-if="reg.is_vegetarian or reg.is_vegan or reg.has_allergies">
+                        <!-- Vegi -->
+                        <td style="text-align: center">
+
+                            <t t-if="reg.is_vegetarian or reg.is_vegan">
+                                <i class="fa fa-check"/>
+                            </t>
+
+                        </td>
+                        <!-- Allergies -->
+                        <td style="text-align: center">
+                            <t t-if="reg.has_allergies">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>
                         <!-- Parking -->
-                        <td>
+                        <td style="text-align: center">
                             <t t-if="reg.need_parking_lot">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>
                         <!-- Shuttle -->
-                        <td>
+                        <td style="text-align: center">
                             <t t-if="reg.interested_in_shuttle_service">
                                 <i class="fa fa-check"/>
                             </t>
-                        </td>
-                        <!-- Edit -->
-                        <td>
-                            <a t-att-href="'/my/registrations/edit/%s' % reg.id">
-                                <button type="button" class="btn btn-secondary">
-                                    <i class="fa fa-pencil"/>
-                                </button>
-                            </a>
                         </td>
                     </tr>
                 </t>
@@ -86,7 +82,6 @@
             </t>
         </t>
     </template>
-
 
 
 </odoo>
