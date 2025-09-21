@@ -158,15 +158,18 @@ class CustomerPortal(CustomerPortal):
 
         registration = request.env['res.partner'].create(registration_vals)
         if participates_in_seminar:
-            print('Add Seminar Participation to Sale Order')
-            # so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
-            #                                                 ('product_id', '=', seminar_fee_product.id)])
-            so_line = request.env['sale.order.line'].create({
-                'name': seminar_fee_product.product_tmpl_id.name + ': ' + participant_name,
-                'order_id': sale_order.id,
-                'product_id': seminar_fee_product.id,
-                'product_uom_qty': 1,
-            })
+            so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
+                                                             ('product_id', '=', seminar_fee_product.id)])
+            if len(so_line) > 0:
+                so_line.write({'product_uom_qty': so_line.product_uom_qty + 1})
+            else:
+                so_line = request.env['sale.order.line'].create({
+                    'name': seminar_fee_product.product_tmpl_id.name,
+                    'order_id': sale_order.id,
+                    'product_id': seminar_fee_product.id,
+                    'product_uom_qty': 1,
+                    'sequence': 100
+                })
 
         if new_booking:
             so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
@@ -174,12 +177,11 @@ class CustomerPortal(CustomerPortal):
             if len(so_line) > 0:
                 so_line.write({'product_uom_qty': so_line.product_uom_qty + 1})
             else:
-                print('Add an additional Room to Sale Order')
                 so_line = request.env['sale.order.line'].create({
                     'name': room.product_id.product_tmpl_id.name,
                     'order_id': sale_order.id,
                     'product_id': room.product_id.id,
-                    'product_uom_qty': 1,
+                    'product_uom_qty': 1
                 })
 
         return request.redirect('/my/registrations')
