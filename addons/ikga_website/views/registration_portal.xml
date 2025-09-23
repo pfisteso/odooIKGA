@@ -71,13 +71,13 @@
                         </td>
                         <!-- Parking -->
                         <td style="text-align: center">
-                            <t t-if="reg.need_parking_lot">
+                            <t t-if="reg.needs_parking_lot">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>
                         <!-- Shuttle -->
                         <td style="text-align: center">
-                            <t t-if="reg.interested_in_shuttle_service">
+                            <t t-if="reg.needs_shuttle">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>

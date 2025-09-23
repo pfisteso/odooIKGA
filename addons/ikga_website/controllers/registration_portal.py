@@ -106,8 +106,8 @@ class CustomerPortal(CustomerPortal):
             'is_vegetarian': is_vegetarian,
             'is_vegan': is_vegan,
             'has_allergies': has_allergies,
-            'interested_in_shuttle_service': needs_shuttle,
-            'need_parking_lot': needs_parking_lot,
+            'needs_shuttle': needs_shuttle,
+            'needs_parking_lot': needs_parking_lot,
         }
         if participates_in_seminar:
             registration_vals.update({
@@ -128,6 +128,7 @@ class CustomerPortal(CustomerPortal):
         seminar_fee_product = self._fetch_seminar_fee()
         try:
             room, new_booking = self._fetch_room(room_preference)
+            registration = request.env['res.partner'].create(registration_vals)
         except Exception as e:
             return self.portal_create_registration(**{
                 'err': str(e),
@@ -153,7 +154,7 @@ class CustomerPortal(CustomerPortal):
                 'reg_parking_lot': needs_parking_lot
             })
 
-        registration = request.env['res.partner'].create(registration_vals)
+
         if participates_in_seminar:
             so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
                                                              ('product_id', '=', seminar_fee_product.id)])
@@ -167,6 +168,8 @@ class CustomerPortal(CustomerPortal):
                     'product_uom_qty': 1,
                     'sequence': 100
                 })
+            # ToDo: check field name
+            registration.write({'amount_seminar': seminar_fee_product.product_tmpl_id.amount})
 
         if new_booking:
             so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
@@ -180,6 +183,9 @@ class CustomerPortal(CustomerPortal):
                     'product_id': room.product_id.id,
                     'product_uom_qty': 1
                 })
+
+            # ToDo: check field name
+            registration.write({'amount_hotel_room': room.product_id.product_tmpl_id.amount / room.capacity})
 
         return request.redirect('/my/registrations')
 

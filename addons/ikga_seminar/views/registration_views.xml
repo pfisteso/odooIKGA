@@ -47,13 +47,13 @@
                             <page string="Arrival &amp; Departure">
                                 <group>
                                     <group>
-                                        <field name="interested_in_shuttle_service"/>
+                                        <field name="needs_shuttle"/>
                                         <field name="airport"/>
                                         <field name="arrival_datetime"/>
                                         <field name="departure_datetime"/>
                                     </group>
                                     <group>
-                                        <field name="need_parking_lot"/>
+                                        <field name="needs_parking_lot"/>
                                     </group>
                                 </group>
                             </page>
@@ -93,8 +93,8 @@
             <field name="arch" type="xml">
                 <list>
                     <field name="name"/>
-                    <field name="need_parking_lot"/>
-                    <field name="interested_in_shuttle_service"/>
+                    <field name="needs_parking_lot"/>
+                    <field name="needs_shuttle"/>
                     <field name="airport"/>
                     <field name="arrival_datetime"/>
                     <field name="departure_datetime"/>
