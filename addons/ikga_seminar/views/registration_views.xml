@@ -11,7 +11,7 @@
                     <field name="country_id"/>
                     <field name="participates_in_seminar"/>
                     <field name="grade_description"/>
-                    <field name="room_preference"/>
+                    <field name="room_category_id"/>
                 </list>
             </field>
         </record>
@@ -60,7 +60,7 @@
                             <page string="Room &amp; Board">
                                 <group>
                                     <group string="Room">
-                                        <field name="room_preference"/>
+                                        <field name="room_category_id"/>
                                         <field name="room_id"/>
                                     </group>
                                     <group string="Board">
@@ -110,7 +110,7 @@
                 <list>
                     <field name="name"/>
                     <field name="participates_in_seminar"/>
-                    <field name="room_preference"/>
+                    <field name="room_category_id"/>
                     <field name="amount_seminar"/>
                     <field name="amount_hotel_room"/>
                     <field name="amount_total"/>
@@ -172,21 +172,6 @@
             <field name="act_window_id" ref="action_ikga_registration_accounting"/>
         </record>
 
-        <!-- Menu Items -->
-        <menuitem id="ikga_menu_root" name="IKGA Seminar" sequence="10"
-                  groups="base.group_user"/>
-
-        <menuitem id="ikga_registration_root" name="Registrations" parent="ikga_menu_root" sequence="10"
-                  groups="base.group_user"/>
-
-        <menuitem id="ikga_registration_default" name="Seminar" parent="ikga_registration_root" sequence="10"
-                  action="action_ikga_registration"/>
-
-        <menuitem id="ikga_registration_travel" name="Travel" parent="ikga_registration_root" sequence="30"
-                  action="action_ikga_registration_travel"/>
-
-        <menuitem id="ikga_registration_accounting" name="Accounting" parent="ikga_registration_root" sequence="50"
-                  action="action_ikga_registration_accounting"/>
 
     </data>
 </odoo>

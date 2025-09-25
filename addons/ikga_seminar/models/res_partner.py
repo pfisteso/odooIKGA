@@ -3,8 +3,6 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 AIRPORTS = [('EPA', 'EuroAirport Basel Mulhouse Freiburg'), ('ZRH', 'Zurich'), ('GVA', 'Geneva'), ('NAN', 'N/A')]
-ROOM_TYPES = [('SINGLE', 'Single Room'), ('DOUBLE', 'Double Room'), ('THREE BED', 'Three Bed Room'),
-              ('FOUR BED', 'Four Bed Room')]
 
 
 class ResPartner(models.Model):
@@ -23,11 +21,9 @@ class ResPartner(models.Model):
     grade_label = fields.Selection(string='Grade Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')], default='KYU')
     grade_number = fields.Integer('Grade Number', default=1)
 
-    # accommodation
-    room_preference = fields.Selection(string='Room Preference', selection=ROOM_TYPES, required=True)
+    # room & board
+    room_category_id = fields.Many2one('ikga.room_category', string='Room Category', required=True)
     room_id = fields.Many2one(comodel_name='ikga.hotel_room', string='Hotel Room')
-
-    # food & beverages
     is_vegetarian = fields.Boolean('Vegetarian', default=False)
     is_vegan = fields.Boolean('Vegan', default=False)
     has_allergies = fields.Boolean('Food Allergies', default=False)
@@ -93,7 +89,7 @@ class ResPartner(models.Model):
         for rec in updated_records:
             row = ['UPDATE', rec.partner_type, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
-                   rec.room_preference, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
+                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
                    rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
                    rec.currency_id, rec.amount_seminar, rec.amount_hotel_room]
 
@@ -107,7 +103,7 @@ class ResPartner(models.Model):
         for rec in new_records:
             row = ['NEW', rec.partner_type, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
-                   rec.room_preference, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
+                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
                    rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
                    rec.currency_id, rec.amount_seminar, rec.amount_hotel_room]
             file.append(row)

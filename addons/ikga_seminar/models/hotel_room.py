@@ -1,32 +1,29 @@
-from operator import index
-
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError, UserError
 
-ROOM_TYPES = [('SINGLE', 'Single Room'), ('DOUBLE', 'Double Room'), ('THREE BED', 'Three Bed Room'),
-              ('FOUR BED', 'Four Bed Room')]
-
-HOTELS = [('SOH', 'Swiss Olympic House'), ('BEL', 'Hotel Bellavista'), ('GHO', 'Grand Hotel'), ('SEH', 'Seehaus')]
+HOTELS = [('SOH', 'Swiss Olympic House'), ('BEL', 'Hotel Bellavista'), ('GHO', 'Grand Hotel'), ('SEE', 'Seehaus')]
 
 class HotelRoom(models.Model):
     _name = 'ikga.hotel_room'
     _description = 'Hotel Room'
 
     name = fields.Char(string='Name', required=True)
-    hotel = fields.Selection(string='Hotel', selection=HOTELS, required=True, index=True)
+    hotel = fields.Selection(string='Hotel', selection=HOTELS, required=True)
     room_number = fields.Char(string='Room Number', default=0)
 
-    capacity = fields.Integer(string='Capacity', default=0)
     n_guests = fields.Integer('# Guests', default=0)  # during registration
-    room_type = fields.Selection(string='Tech. Name', selection=ROOM_TYPES, index=True, required=True)
+    room_category_id = fields.Many2one('ikga.room_category', string='Room Category', required=True, index=True)
 
     country_manager_id = fields.Many2one('res.partner', string='Country Manager', index=True)
-    product_id = fields.Many2one('product.product', string='Product', index=True)
     guest_ids = fields.One2many('res.partner', inverse_name='room_id',
                                 domain="[('partner_type', '=', 'registration')]", index=True)
 
-    # computed fields
+    # computed and related fields
     is_full = fields.Boolean('Full', compute='_compute_full')
+    capacity = fields.Integer(string='Capacity', related='room_category_id.capacity',store=True)
+    price_per_guest = fields.Float(string='Price per Guest', related='room_category_id.price_per_guest',store=True)
+    product_id = fields.Many2one('product.product', string='Product', related='room_category_id.product_id', store=True,
+                                 index=True)
 
     @api.depends('capacity', 'n_guests')
     def _compute_full(self):

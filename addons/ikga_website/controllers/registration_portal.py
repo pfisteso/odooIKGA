@@ -6,11 +6,6 @@ from odoo.http import request
 from odoo.exceptions import UserError, MissingError
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
-ROOM_TYPES = [('SINGLE', 'Single Room'),
-              ('DOUBLE', 'Double Room'),
-              ('THREE BED', 'Three-Bed Room'),
-              ('FOUR BED', 'Four-Bed Room')]
-
 DEADLINE = datetime.fromisoformat('2026-03-01T05:00:00')
 
 
@@ -239,16 +234,17 @@ class CustomerPortal(CustomerPortal):
     def _fetch_available_room_types(self):
         available_rooms = []
         country_manager = request.env.user.partner_id
-        for rt in ROOM_TYPES:
-            rooms = request.env['ikga.hotel_room'].search([('room_type', '=', rt[0]),
+        room_categories = request.env['ikga.room_category'].search()
+        for rt in room_categories:
+            rooms = request.env['ikga.hotel_room'].search([('room_category_id', '=', rt.id),
                                                            ('country_manager_id', '=', False)])
             if rooms and rooms is not None and len(rooms) > 0:
-                available_rooms.append(rt)
+                available_rooms.append((rt.id, rt.name))
             else:
-                rooms = request.env['ikga.hotel_room'].search([('room_type', '=', rt[0]),
+                rooms = request.env['ikga.hotel_room'].search([('room_category_id', '=', rt.id),
                                                                ('country_manager_id', '=', country_manager.id)])
                 for r in rooms:
                     if not r.is_full:
-                        available_rooms.append(rt)
+                        available_rooms.append((r.id, r.name))
                         break
         return available_rooms

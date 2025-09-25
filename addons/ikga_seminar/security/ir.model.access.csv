@@ -1,2 +1,3 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
 user_hotel_room,user_hotel_room,model_ikga_hotel_room,base.group_user,1,1,1,1
+user_room_category,user_room_category,model_ikga_room_category,base.group_user,1,1,1,1

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="ikga_menu_root" name="IKGA Seminar" sequence="10"
+                  groups="base.group_user">
+
+            <menuitem id="ikga_registration_root" name="Registrations" sequence="10" groups="base.group_user">
+
+                <menuitem id="ikga_registration_default" name="Seminar" sequence="10"
+                          action="action_ikga_registration"/>
+
+                <menuitem id="ikga_registration_travel" name="Travel" sequence="30"
+                          action="action_ikga_registration_travel"/>
+
+                <menuitem id="ikga_registration_accounting" name="Accounting" sequence="50"
+                          action="action_ikga_registration_accounting"/>
+            </menuitem>
+
+            <menuitem id="ikga_hotel_room_root" name="Hotel Rooms" sequence="20" groups="base.group_user">
+
+                <menuitem id="ikga_hotel_room_menu" name="Hotel Rooms"  sequence="10"
+                  action="action_ikga_hotel_room" groups="base.group_user"/>
+
+                <menuitem id="ikga_room_category_menu" name="Categories" sequence="20"
+                          action="action_ikga_room_category" groups="base.group_user"/>
+
+            </menuitem>
+
+
+
+        </menuitem>
+
+
+    </data>
+</odoo>

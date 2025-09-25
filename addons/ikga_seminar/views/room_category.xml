@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- List UI -->
+        <record id="view_hotel_room_list" model="ir.ui.view">
+            <field name="name">ikga.room_category.list</field>
+            <field name="model">ikga.room_category</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="capacity"/>
+                    <field name="price_per_guest"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form UI -->
+        <record id="view_hotel_room_form" model="ir.ui.view">
+            <field name="name">ikga.room_category.form</field>
+            <field name="model">ikga.room_category</field>
+            <field name="arch" type="xml">
+                <form string="Create / Edit Category">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="capacity"/>
+                            </group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="price_per_guest"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_ikga_room_category" model="ir.actions.act_window">
+            <field name="name">Room Categories</field>
+            <field name="res_model">ikga.room_category</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+
+
+    </data>
+</odoo>
