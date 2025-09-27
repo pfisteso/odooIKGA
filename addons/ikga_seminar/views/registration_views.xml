@@ -25,6 +25,7 @@
                     <sheet>
                         <group>
                             <group>
+                                <field name="is_registration"/>
                                 <field name="name"/>
                                 <field name="birthdate"/>
                             </group>

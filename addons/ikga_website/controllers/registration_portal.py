@@ -69,8 +69,7 @@ class CustomerPortal(CustomerPortal):
                 'reg_shuttle_service': False,
                 'reg_airport': 'NAN',
                 'reg_arrival_datetime': datetime.fromisoformat('2026-08-12T08:00:00'),  # ToDo: evtl. Zeitzone anpassen
-                'reg_departure_datetime': datetime.fromisoformat('2026-08-16T18:00:00'),
-                # ToDo: evtl. Zeitzone anpassen
+                'reg_departure_datetime': datetime.fromisoformat('2026-08-16T18:00:00'),# ToDo: evtl. Zeitzone anpassen
                 'reg_parking_lot': False
             })
 
@@ -118,11 +117,16 @@ class CustomerPortal(CustomerPortal):
         sale_order = self._fetch_or_create_sale_order()
         seminar_fee_product = self._fetch_seminar_fee()
         update_values = {'currency_id': sale_order.currency_id.id,}
+
+        registration = None
         try:
-            room, new_booking = self._fetch_room(room_preference)
             registration = request.env['res.partner'].create(registration_vals)
+            room, new_booking = self._fetch_room(room_preference)
 
         except Exception as e:
+            if registration is not None:
+                registration.sudo().unlink()
+
             return self.portal_create_registration(**{
                 'err': str(e),
                 # personal information
@@ -160,7 +164,6 @@ class CustomerPortal(CustomerPortal):
                     'product_uom_qty': 1,
                     'sequence': 100
                 })
-            # ToDo: check field name
             update_values.update({'amount_seminar': so_line.price_unit})
 
         if new_booking:
@@ -175,9 +178,12 @@ class CustomerPortal(CustomerPortal):
                     'product_id': room.product_id.id,
                     'product_uom_qty': 1
                 })
-
-            # ToDo: check field name
             update_values.update({'amount_hotel_room': so_line.price_unit / room.capacity})
+        else:
+            so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
+                                                             ('product_id', '=', room.product_id.id)])
+            update_values.update({'amount_hotel_room': so_line.price_unit / room.capacity})
+
 
         registration.write(update_values)
         return request.redirect('/my/registrations')
@@ -241,6 +247,6 @@ class CustomerPortal(CustomerPortal):
                                                                ('country_manager_id', '=', country_manager.id)])
                 for r in rooms:
                     if not r.is_full:
-                        available_rooms.append((r.id, r.name))
+                        available_rooms.append((rt.id, rt.name))
                         break
         return available_rooms

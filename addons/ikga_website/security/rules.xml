@@ -7,9 +7,9 @@
             <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
             <field name="domain_force">[('country_manager_id', '=', user.partner_id.id)]</field>
             <field name="perm_unlink" eval="False"/>
-            <field name="perm_write" eval="True"/>
+            <field name="perm_write" eval="False"/>
             <field name="perm_read" eval="True"/>
-            <field name="perm_create" eval="True"/>
+            <field name="perm_create" eval="False"/>
         </record>
 
 <!--        <record model="ir.rule" id="porta_res_partner_rule">
