@@ -10,7 +10,6 @@
                 <list>
                     <field name="name"/>
                     <field name="capacity"/>
-                    <field name="price_per_guest"/>
                 </list>
             </field>
         </record>
@@ -29,7 +28,6 @@
                             </group>
                             <group>
                                 <field name="product_id"/>
-                                <field name="price_per_guest"/>
                             </group>
                         </group>
                     </sheet>

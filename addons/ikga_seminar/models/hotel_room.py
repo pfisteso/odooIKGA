@@ -16,14 +16,13 @@ class HotelRoom(models.Model):
 
     country_manager_id = fields.Many2one('res.partner', string='Country Manager', index=True)
     guest_ids = fields.One2many('res.partner', inverse_name='room_id',
-                                domain="[('partner_type', '=', 'registration')]", index=True)
+                                domain="[('is_registration', '=', True)]", index=True)
 
     # computed and related fields
     is_full = fields.Boolean('Full', compute='_compute_full')
     capacity = fields.Integer(string='Capacity', related='room_category_id.capacity',store=True)
-    price_per_guest = fields.Float(string='Price per Guest', related='room_category_id.price_per_guest',store=True)
-    product_id = fields.Many2one('product.product', string='Product', related='room_category_id.product_id', store=True,
-                                 index=True)
+    product_id = fields.Many2one('product.product', string='Product', related='room_category_id.product_id',
+                                 store=True, index=True)
 
     @api.depends('capacity', 'n_guests')
     def _compute_full(self):
@@ -42,7 +41,7 @@ class HotelRoom(models.Model):
     @api.model
     def create(self, vals):
         # Ensure field starts unset if not provided
-        vals.setdefault('country_manager_id', False)
+        # vals.setdefault('country_manager_id', False)
         return super().create(vals)
 
     def write(self, vals):
