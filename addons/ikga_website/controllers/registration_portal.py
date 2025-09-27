@@ -6,29 +6,24 @@ from odoo.http import request
 from odoo.exceptions import UserError, MissingError
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
-DEADLINE = datetime.fromisoformat('2026-03-01T05:00:00')
-
 
 class CustomerPortal(CustomerPortal):
 
     @http.route(['/my/registrations'], type='http', auth="user", website=True)
     def portal_my_registrations(self, **kw):
         ts = datetime.now()
+        deadline = request.env['res.config.settings'].sudo().get_values()['registration_deadline']
 
         values = self._prepare_portal_layout_values()
         user = request.env.user
 
         ResPartner = request.env['res.partner']
-        domain = [
-            ('create_uid', '=', user.id),
-            ('partner_type', '=', 'registration'),
-        ]
-
+        domain = [('is_registration', '=', True)]
         registrations = ResPartner.search(domain, order='create_date desc')
 
         values.update({
             'registrations': registrations,
-            'registration_closed': ts > DEADLINE,
+            'registration_closed': ts > deadline,
         })
 
         return request.render('ikga_website.portal_registration_list', values)
@@ -36,8 +31,9 @@ class CustomerPortal(CustomerPortal):
     @http.route(['/my/registrations/create'], type='http', auth="user", website=True)
     def portal_create_registration(self, **kw):
         # check deadline
+        deadline = request.env['res.config.settings'].sudo().get_values()['registration_deadline']
         ts = datetime.now()
-        if ts > DEADLINE:
+        if ts > deadline:
             return request.redirect('/my/registrations')
 
         values = self._prepare_portal_layout_values()
@@ -83,8 +79,8 @@ class CustomerPortal(CustomerPortal):
 
     @http.route(['/my/registrations/save_create'], type='http', auth="user", website=True)
     def portal_save_registration(self, first_name: str, last_name: str, birthdate: date,
-                                 grade_number: int, grade_label: str, room_preference: str, allergen_list: str,
-                                 airport: str, arrival_datetime: datetime, departure_datetime: datetime,
+                                 grade_number: int, grade_label: str, room_preference: int, allergen_list: str,
+                                 airport: str, arrival_datetime: str, departure_datetime: str,
                                  participates_in_seminar: bool = False, is_vegetarian: bool = False,
                                  is_vegan: bool = False, has_allergies: bool = False, needs_shuttle: bool = False,
                                  needs_parking_lot: bool = False, **kw):
@@ -92,12 +88,12 @@ class CustomerPortal(CustomerPortal):
         # prepare all values for the registration
         participant_name = '{} {}'.format(first_name, last_name.upper())
         registration_vals = {
-            'partner_type': 'registration',
+            'is_registration': True,
             'name': participant_name,
             'birthdate': birthdate,
             'participates_in_seminar': participates_in_seminar,
 
-            'room_preference': room_preference,
+            'room_category_id': int(room_preference),
             'is_vegetarian': is_vegetarian,
             'is_vegan': is_vegan,
             'has_allergies': has_allergies,
@@ -114,16 +110,18 @@ class CustomerPortal(CustomerPortal):
         if needs_shuttle:
             registration_vals.update({
                 'airport': airport,
-                'arrival_datetime': arrival_datetime,
-                'departure_datetime': departure_datetime
+                'arrival_datetime': datetime.fromisoformat(arrival_datetime),
+                'departure_datetime': datetime.fromisoformat(departure_datetime)
             })
 
         # fetch or create sale order and products
         sale_order = self._fetch_or_create_sale_order()
         seminar_fee_product = self._fetch_seminar_fee()
+        update_values = {'currency_id': sale_order.currency_id.id,}
         try:
             room, new_booking = self._fetch_room(room_preference)
             registration = request.env['res.partner'].create(registration_vals)
+
         except Exception as e:
             return self.portal_create_registration(**{
                 'err': str(e),
@@ -149,7 +147,6 @@ class CustomerPortal(CustomerPortal):
                 'reg_parking_lot': needs_parking_lot
             })
 
-
         if participates_in_seminar:
             so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
                                                              ('product_id', '=', seminar_fee_product.id)])
@@ -164,7 +161,7 @@ class CustomerPortal(CustomerPortal):
                     'sequence': 100
                 })
             # ToDo: check field name
-            registration.write({'amount_seminar': seminar_fee_product.product_tmpl_id.amount})
+            update_values.update({'amount_seminar': so_line.price_unit})
 
         if new_booking:
             so_line = request.env['sale.order.line'].search([('order_id', '=', sale_order.id),
@@ -180,8 +177,9 @@ class CustomerPortal(CustomerPortal):
                 })
 
             # ToDo: check field name
-            registration.write({'amount_hotel_room': room.product_id.product_tmpl_id.amount / room.capacity})
+            update_values.update({'amount_hotel_room': so_line.price_unit / room.capacity})
 
+        registration.write(update_values)
         return request.redirect('/my/registrations')
 
     def _fetch_or_create_sale_order(self):
@@ -197,19 +195,16 @@ class CustomerPortal(CustomerPortal):
         return sale_order
 
     def _fetch_seminar_fee(self):
-        product_template = request.env['product.template'].search([('name', '=', 'Seminar Fee')])
-        if len(product_template) != 1:
-            raise Exception('The system is misconfigured. Please contact your administrator.')
-        product = request.env['product.product'].search([('product_tmpl_id', '=', product_template.id)])
-        if len(product) != 1:
-            raise Exception('The system is misconfigured. Please contact your administrator.')
-        return product
+        product_id = request.env['res.config.settings'].sudo().get_values()['seminar_fee_product_id']
+        if not product_id:
+            raise Exception('The system is misconfigured. Please contact us at info@ikgaswitzerland.ch.')
+        return product_id
 
-    def _fetch_room(self, room_preference):
+    def _fetch_room(self, room_preference: int):
         country_manager = request.env.user.partner_id
         # try to find an already booked with open capacity
-        booked_rooms = request.env['ikga.hotel_room'].search([('country_manager_id', '=', country_manager.id),
-                                                              ('room_type', '=', room_preference)])
+        booked_rooms = request.env['ikga.hotel_room'].sudo().search([('country_manager_id', '=', country_manager.id),
+                                                              ('room_category_id', '=', int(room_preference))])
 
         for room in booked_rooms:
             if not room.is_full:
@@ -219,11 +214,12 @@ class CustomerPortal(CustomerPortal):
             while True:
                 try:
                     # look for an empty room
-                    room = request.env['ikga.hotel_room'].search([('room_type', '=', room_preference),
+                    room = request.env['ikga.hotel_room'].sudo().search([('room_category_id', '=', int(room_preference)),
                                                                   ('country_manager_id', '=', False)], limit=1)
                     if not room or room is None or len(room) == 0:
+                        rooms = request.env['ikga.hotel_room'].sudo().search([('room_category_id','=', int(room_preference))])
                         raise Exception(
-                            'Unfortunately, all rooms of the desired type are booked. Please select a different category.')
+                            'Unfortunately, all rooms of the desired type are booked. Please select a different category. {}'.format(rooms.room_category_id))
 
                     room.write({'country_manager_id': country_manager.id, 'n_guests': 1})
                     return room, True
@@ -234,7 +230,7 @@ class CustomerPortal(CustomerPortal):
     def _fetch_available_room_types(self):
         available_rooms = []
         country_manager = request.env.user.partner_id
-        room_categories = request.env['ikga.room_category'].search()
+        room_categories = request.env['ikga.room_category'].search(domain=[])
         for rt in room_categories:
             rooms = request.env['ikga.hotel_room'].search([('room_category_id', '=', rt.id),
                                                            ('country_manager_id', '=', False)])

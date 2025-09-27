@@ -73,6 +73,7 @@
                             </page>
                             <page string="Payment">
                                 <group>
+                                    <field name="currency_id"/>
                                     <field name="amount_seminar"/>
                                     <field name="amount_hotel_room"/>
                                     <field name="amount_total"/>
@@ -124,8 +125,8 @@
             <field name="name">IKGA Registrations</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list,form</field>
-            <field name="domain">[['partner_type', '=', 'registration']]</field>
-            <field name="context">{'partner_type': 'registration'}</field>
+            <field name="domain">[['is_registration', '=', True]]</field>
+            <field name="context">{'is_registration': True}</field>
         </record>
 
         <record model="ir.actions.act_window.view" id="registration_list">
@@ -147,7 +148,7 @@
             <field name="name">IKGA Registrations - Travel</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list</field>
-            <field name="domain">[['partner_type', '=', 'registration']]</field>
+            <field name="domain">[['is_registration', '=', True]]</field>
         </record>
 
         <record model="ir.actions.act_window.view" id="registration_travel_list">
@@ -162,7 +163,7 @@
             <field name="name">IKGA Registrations - Accounting</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list</field>
-            <field name="domain">[['partner_type', '=', 'registration']]</field>
+            <field name="domain">[['is_registration', '=', True]]</field>
         </record>
 
         <record model="ir.actions.act_window.view" id="registration_accounting_list">

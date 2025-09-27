@@ -9,14 +9,13 @@ class ResPartner(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
-    partner_type = fields.Selection(string='Partner Type',
-                                    selection=[('user', 'User'), ('registration', 'Registration')],
-                                    default='user')
+    is_registration = fields.Boolean('Is Registration', default=False)
 
     birthdate = fields.Date('Birthdate', required=True)
 
     # seminar information
-    country_manager_id = fields.Many2one('res.partner', string='Country Manager', )
+    country_manager_id = fields.Many2one('res.partner', string='Country Manager',
+                                         domain=['&', ('parent_id', '!=', False), ('is_registration', '=', False)])
     participates_in_seminar = fields.Boolean('Participates in the Seminar?', default=False)
     grade_label = fields.Selection(string='Grade Label', selection=[('KYU', 'Kyu'), ('DAN', 'Dan')], default='KYU')
     grade_number = fields.Integer('Grade Number', default=1)
@@ -74,34 +73,17 @@ class ResPartner(models.Model):
             rec.amount_total = rec.amount_seminar + rec.amount_hotel_room
 
     def cron_action_export_backup(self):
-        file = []
-
-        header = ['Type', 'Partner Type', 'Name', 'Birthdate', 'Country',
+        header = ['Type', 'Is Registration', 'Name', 'Birthdate', 'Country',
                   'Country Manager', 'Participates in Seminar', 'Grade Number', 'Grade Label',
                   'Room Preference', 'Vegetarian', 'Vegan', 'Allergies', 'Allergens',
                   'Shuttle', 'Airport', 'Arrival', 'Departure', 'Parking Lot',
                   'Currency', 'Seminar Fee', 'Room & Board']
-        file.append(header)
-
-        updated_records = self.env['res.partner'].search([('partner_type', '=', 'registration'),
-                                                          ('updated', '=', True),
-                                                          ('exported', '=', True)])
-        for rec in updated_records:
-            row = ['UPDATE', rec.partner_type, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
-                   rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
-                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
-                   rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
-                   rec.currency_id, rec.amount_seminar, rec.amount_hotel_room]
-
-        # ToDo: send updated to backup address
-        # if len (file) > 1
-        updated_records.write({'exported': True, 'updated': False})
 
         file = [header]
-        new_records = self.env['res.partner'].search([('partner_type', '=', 'registration'),
-                                                     ('exported', '=', False)])
+        new_records = self.env['res.partner'].search([('is_registration', '=', True),
+                                                      ('exported', '=', False)])
         for rec in new_records:
-            row = ['NEW', rec.partner_type, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
+            row = ['NEW', rec.is_registration, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
                    rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
                    rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
@@ -112,21 +94,40 @@ class ResPartner(models.Model):
         # if len(file) > 1
         new_records.write({'exported': True, 'updated': False})
 
+        file = [header]
+        updated_records = self.env['res.partner'].search([('is_registration', '=', True),
+                                                          ('updated', '=', True),
+                                                          ('exported', '=', True)])
+        for rec in updated_records:
+            row = ['UPDATE', rec.is_registration, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
+                   rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
+                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
+                   rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
+                   rec.currency_id, rec.amount_seminar, rec.amount_hotel_room]
+
+        # ToDo: send updated to backup address
+        # if len (file) > 1
+        updated_records.write({'exported': True, 'updated': False})
+
+
 
     @api.model
     def create(self, vals):
-        record = super().create(vals)
-        if 'partner_type' not in vals:
-            record.partner_type = self.env.context.get('partner_type', 'user')
-
-        if 'country_manager_id' not in vals:
-            record.country_manager_id = record.create_uid.partner_id
-        if 'country_id' not in vals:
-            record.country_id = record.country_manager_id.country_id
-        record.currency_id = record.create_uid.company_id.currency_id
-        return record
+        records = super().create(vals)
+        for rec in records:
+            if 'country_manager_id' not in vals:
+                rec.country_manager_id = rec.create_uid.partner_id
+            if 'country_id' not in vals:
+                rec.country_id = rec.country_manager_id.country_id
+            if 'currency_id' not in vals:
+                if not rec.is_registration:
+                    if rec.specific_property_product_pricelist is not None:
+                        rec.currency_id = rec.specific_property_product_pricelist.currency_id.id
+                    else:
+                        rec.currency_id = rec.country_manager_id.currency_id.id
+        return records
 
     def write(self, vals):
         if 'exported' not in vals and 'updated' not in vals:
             vals.update({'updated': True})
-        super(ResPartner, self).write(vals)
+        return super(ResPartner, self).write(vals)

@@ -53,7 +53,7 @@
                         </td>
                         <!-- Room Type -->
                         <td>
-                            <span t-field="reg.room_preference"/>
+                            <span t-field="reg.room_category_id.name"/>
                         </td>
                         <!-- Vegi -->
                         <td style="text-align: center">
