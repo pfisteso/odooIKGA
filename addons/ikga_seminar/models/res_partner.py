@@ -1,4 +1,7 @@
 import csv
+from datetime import date
+from io import StringIO
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -73,11 +76,13 @@ class ResPartner(models.Model):
             rec.amount_total = rec.amount_seminar + rec.amount_hotel_room
 
     def cron_action_export_backup(self):
+        name_pattern = date.today().strftime('%Y-%m-%d_{}.csv')
+
         header = ['Type', 'Is Registration', 'Name', 'Birthdate', 'Country',
                   'Country Manager', 'Participates in Seminar', 'Grade Number', 'Grade Label',
                   'Room Preference', 'Vegetarian', 'Vegan', 'Allergies', 'Allergens',
                   'Shuttle', 'Airport', 'Arrival', 'Departure', 'Parking Lot',
-                  'Currency', 'Seminar Fee', 'Room & Board']
+                  'Seminar Fee', 'Room & Board']
 
         file = [header]
         new_records = self.env['res.partner'].search([('is_registration', '=', True),
@@ -85,14 +90,15 @@ class ResPartner(models.Model):
         for rec in new_records:
             row = ['NEW', rec.is_registration, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
-                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
+                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen_list,
                    rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
-                   rec.currency_id, rec.amount_seminar, rec.amount_hotel_room]
+                   rec.amount_seminar, rec.amount_hotel_room]
             file.append(row)
 
-        # ToDo: send new records to backup address
-        # if len(file) > 1
-        new_records.write({'exported': True, 'updated': False})
+        if len(file) > 1:
+            attachment = self._create_attachment(name_pattern.format('NEW'), file)
+            self._send_email(attachment)
+            new_records.write({'exported': True, 'updated': False})
 
         file = [header]
         updated_records = self.env['res.partner'].search([('is_registration', '=', True),
@@ -101,15 +107,37 @@ class ResPartner(models.Model):
         for rec in updated_records:
             row = ['UPDATE', rec.is_registration, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
-                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen,
+                   rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen_list,
                    rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
-                   rec.currency_id, rec.amount_seminar, rec.amount_hotel_room]
+                   rec.amount_seminar, rec.amount_hotel_room]
+            file.append(row)
 
-        # ToDo: send updated to backup address
-        # if len (file) > 1
+        if len(file) > 1:
+            attachment = self._create_attachment(name_pattern.format('UPDATE'), file)
+            self._send_email(attachment)
         updated_records.write({'exported': True, 'updated': False})
 
+    def _create_attachment(self, name, rows):
+        csv_data = StringIO()
+        writer = csv.writer(csv_data)
+        writer.writerows(rows)
 
+        attachment = self.env['ir.attachment'].create({
+            'name': name,
+            'description': name,
+            'res_model': self._name,
+            'type': 'binary',
+            'public': False,
+            'db_datas': csv_data.getvalue().encode('utf-8'),
+            'mimetype': 'text/csv'
+        })
+        csv_data.close()
+        return attachment
+
+    def _send_email(self, attachment):
+        email_template = self.env.ref('ikga_seminar.registration_backup_email_template')
+        email_template.attachment_ids = [attachment.id]
+        email_template.send_mail(self.id, raise_exception=False, force_send=True)
 
     @api.model
     def create(self, vals):

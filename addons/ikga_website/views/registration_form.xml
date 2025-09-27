@@ -151,7 +151,6 @@
                             <select class="form-control form-select form-inline" id="regRoomType" name="room_preference"
                                     required="True">
                                 <t t-foreach="available_room_types" t-as="room_type">
-                                    <!-- ToDo: Does this work? -->
                                     <t t-if="room_type[0] == reg_room_preference">
                                         <option t-att-value="room_type[0]" selected="True">
                                             <span t-out="room_type[1]"/>
@@ -275,7 +274,6 @@
                         <div class="col col-3">
                             <select class="form-control form-select form-inline" id="regArrivalAirport" name="airport">
                                 <t t-foreach="airports" t-as="a">
-                                    <!-- ToDo: Does this work? -->
                                     <t t-if="a[0] == reg_airport">
                                         <option t-att-value="a[0]" selected="True">
                                             <span t-out="a[1]"/>

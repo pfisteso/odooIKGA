@@ -18,7 +18,9 @@
         "views/res_config_settings.xml",
         "views/registration_views.xml",
         "views/room_category.xml",
-        "views/menu.xml"
+        "views/menu.xml",
+        "views/mail_templates.xml",
+        "views/cron.xml"
     ],
     "intallable": True,
     "application": True,
