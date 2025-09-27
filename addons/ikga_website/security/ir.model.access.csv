@@ -9,3 +9,6 @@ portal_product_product,portal_product_product,sale.model_product_product,base.gr
 portal_ir_actions_report,portal_ir_actions_report,base.model_ir_actions_report,base.group_portal,1,0,0,0
 portal_snailmail_letter,portal_snailmail_letter,snailmail.model_snailmail_letter,base.group_portal,1,0,1,0
 portal_room_category,portal_room_cateogry,ikga_seminar.model_ikga_room_category,base.group_portal,1,0,0,0
+portal_res_partner_category,portal_res_partner_category,base.model_res_partner_category,base.group_portal,1,1,0,0
+portal_product_template_attribute_value,portal_product_template_attribute_value,product.model_product_template_attribute_value,base.group_portal,1,0,0,0
+portal_account_tax,portal_account_tax,account.model_account_tax,base.group_portal,1,0,0,0
