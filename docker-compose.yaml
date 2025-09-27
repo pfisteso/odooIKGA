@@ -2,7 +2,7 @@ name: odoo_ikga
 
 services:
   odoo:
-    image: odoo:18
+    image: odoo:19
     depends_on:
       - database
     ports:
