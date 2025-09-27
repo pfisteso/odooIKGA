@@ -13,6 +13,10 @@
                             <label for="registration_deadline" string="Deadline" class="col-2 o_light_label"/>
                             <field name="registration_deadline"/>
                         </div>
+                        <div>
+                            <label for="seminar_fee_product_id" string="Seminar Fee" class="col-2 o_light_label"/>
+                            <field name="seminar_fee_product_id"/>
+                        </div>
                     </block>
                 </app>
             </xpath>
