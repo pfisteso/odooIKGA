@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <xpath expr="//table/tbody[@class='invoice_tbody']/t[last()]/t[@t-if='not hide_details and not hide_prices']/tr/t[3]/td[1]"
+               position="attributes">
+            <attribute name="t-att-colspan">(1 if is_product else 6 if display_discount and display_taxes else 5 if display_discount or display_taxes else 4) - line_colspan</attribute>
+        </xpath>
+
+
+    </template>
 
 </odoo>
