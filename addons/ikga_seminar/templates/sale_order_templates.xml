@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document_adapt" inherit_id="sale.report_saleorder_document">
+        <!-- Remove the information block (shipping address, invoice address etc.) -->
+        <xpath expr="//t[@t-set='information_block']" position="replace"/>
+        <!-- Replace Title: Order -> Booking -->
+        <xpath expr="//div[@class='page']/t[@t-set='layout_document_title']/span[@t-else]" position="replace">
+            <span t-else="">Booking # </span>
+        </xpath>
+        <!-- Remove Payment Note etc. -->
+        <xpath expr="//div[@class='page']/div[8]" position="replace"/>
+        <!-- Remove "Connect your Software -->
+        <xpath expr="//div[@class='page']/div[last()]" position="replace"/>
+
+    </template>
+</odoo>

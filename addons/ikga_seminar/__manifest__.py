@@ -14,12 +14,14 @@
 
     "data": [
         "security/ir.model.access.csv",
+        "templates/account_invoice_templates.xml",
+        "templates/mail_templates.xml",
+        "templates/sale_order_templates.xml",
         "views/hotel_room_views.xml",
         "views/res_config_settings.xml",
         "views/registration_views.xml",
         "views/room_category.xml",
         "views/menu.xml",
-        "views/mail_templates.xml",
         "views/cron.xml"
     ],
     "intallable": True,
