@@ -30,7 +30,6 @@
                         <th>Room Type</th>
                         <th style="text-align: center">Vegan/Vegetarian</th>
                         <th style="text-align: center">Allergies</th>
-                        <th style="text-align: center">Parking</th>
                         <th style="text-align: center">Shuttle</th>
 
                     </tr>
@@ -66,12 +65,6 @@
                         <!-- Allergies -->
                         <td style="text-align: center">
                             <t t-if="reg.has_allergies">
-                                <i class="fa fa-check"/>
-                            </t>
-                        </td>
-                        <!-- Parking -->
-                        <td style="text-align: center">
-                            <t t-if="reg.needs_parking_lot">
                                 <i class="fa fa-check"/>
                             </t>
                         </td>

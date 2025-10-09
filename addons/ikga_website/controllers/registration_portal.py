@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from odoo import http
 from odoo.http import request
@@ -109,8 +109,8 @@ class CustomerPortal(CustomerPortal):
         if needs_shuttle:
             registration_vals.update({
                 'airport': airport,
-                'arrival_datetime': datetime.fromisoformat(arrival_datetime),
-                'departure_datetime': datetime.fromisoformat(departure_datetime)
+                'arrival_datetime': datetime.fromisoformat(arrival_datetime) - timedelta(hours=2),
+                'departure_datetime': datetime.fromisoformat(departure_datetime) - timedelta(hours=2)
             })
 
         # fetch or create sale order and products

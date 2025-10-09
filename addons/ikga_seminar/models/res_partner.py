@@ -81,7 +81,7 @@ class ResPartner(models.Model):
         header = ['Type', 'Is Registration', 'Name', 'Birthdate', 'Country',
                   'Country Manager', 'Participates in Seminar', 'Grade Number', 'Grade Label',
                   'Room Preference', 'Vegetarian', 'Vegan', 'Allergies', 'Allergens',
-                  'Shuttle', 'Airport', 'Arrival', 'Departure', 'Parking Lot',
+                  'Shuttle', 'Airport', 'Arrival', 'Departure',
                   'Seminar Fee', 'Room & Board']
 
         file = [header]
@@ -91,7 +91,7 @@ class ResPartner(models.Model):
             row = ['NEW', rec.is_registration, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
                    rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen_list,
-                   rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
+                   rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime,
                    rec.amount_seminar, rec.amount_hotel_room]
             file.append(row)
 
@@ -108,7 +108,7 @@ class ResPartner(models.Model):
             row = ['UPDATE', rec.is_registration, rec.name, rec.birthdate.strftime('%d/%m/%Y'), rec.country_id.name,
                    rec.country_manager_id.name, rec.participates_in_seminar, rec.grade_number, rec.grade_label,
                    rec.room_category_id.name, rec.is_vegetarian, rec.is_vegan, rec.has_allergies, rec.allergen_list,
-                   rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime, rec.needs_parking_lot,
+                   rec.needs_shuttle, rec.airport, rec.arrival_datetime, rec.departure_datetime,
                    rec.amount_seminar, rec.amount_hotel_room]
             file.append(row)
 

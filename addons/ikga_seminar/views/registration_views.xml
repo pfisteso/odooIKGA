@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- List UI - Default -->
+        <!-- List UI - All -->
         <record id="view_registration_list" model="ir.ui.view">
             <field name="name">ikga.registration.list</field>
             <field name="model">res.partner</field>
@@ -10,13 +10,12 @@
                     <field name="name"/>
                     <field name="country_id"/>
                     <field name="participates_in_seminar"/>
-                    <field name="grade_description"/>
                     <field name="room_category_id"/>
                 </list>
             </field>
         </record>
 
-        <!-- Form UI - Default -->
+        <!-- Form UI - All -->
         <record id="view_registration_form" model="ir.ui.view">
             <field name="name">ikga.registration.form</field>
             <field name="model">res.partner</field>
@@ -53,9 +52,6 @@
                                         <field name="arrival_datetime"/>
                                         <field name="departure_datetime"/>
                                     </group>
-                                    <group>
-                                        <field name="needs_parking_lot"/>
-                                    </group>
                                 </group>
                             </page>
                             <page string="Room &amp; Board">
@@ -88,6 +84,20 @@
             </field>
         </record>
 
+        <!-- List UI - Seminar -->
+        <record id="view_registration_list_seminar" model="ir.ui.view">
+            <field name="name">ikga.registration.list.seminar</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="country_id"/>
+                    <field name="participates_in_seminar"/>
+                    <field name="grade_description"/>
+                </list>
+            </field>
+        </record>
+
         <!-- List UI - Travel -->
         <record id="view_registration_list_travel" model="ir.ui.view">
             <field name="name">ikga.registration.list</field>
@@ -95,7 +105,6 @@
             <field name="arch" type="xml">
                 <list>
                     <field name="name"/>
-                    <field name="needs_parking_lot"/>
                     <field name="needs_shuttle"/>
                     <field name="airport"/>
                     <field name="arrival_datetime"/>
@@ -123,7 +132,7 @@
 
         <!-- Default View -->
         <record id="action_ikga_registration" model="ir.actions.act_window">
-            <field name="name">IKGA Registrations</field>
+            <field name="name">All Registrations</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list,form</field>
             <field name="domain">[['is_registration', '=', True]]</field>
@@ -144,12 +153,27 @@
             <field name="act_window_id" ref="action_ikga_registration"/>
         </record>
 
-        <!-- View for Travel Information -->
-        <record id="action_ikga_registration_travel" model="ir.actions.act_window">
-            <field name="name">IKGA Registrations - Travel</field>
+        <!-- List UI - Seminar -->
+        <record id="action_ikga_registration_seminar" model="ir.actions.act_window">
+            <field name="name">Seminar Registrations</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list</field>
-            <field name="domain">[['is_registration', '=', True]]</field>
+            <field name="domain">[['is_registration', '=', True], ['participates_in_seminar', '=', True]]</field>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="registration_seminar_list">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="view_registration_list_seminar"/>
+            <field name="act_window_id" ref="action_ikga_registration_seminar"/>
+        </record>
+
+        <!-- View for Travel Information -->
+        <record id="action_ikga_registration_travel" model="ir.actions.act_window">
+            <field name="name">Shuttle Registrations</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">list</field>
+            <field name="domain">[['is_registration', '=', True], ['needs_shuttle', '=', True]]</field>
         </record>
 
         <record model="ir.actions.act_window.view" id="registration_travel_list">
@@ -161,7 +185,7 @@
 
         <!-- View for Accounting -->
         <record id="action_ikga_registration_accounting" model="ir.actions.act_window">
-            <field name="name">IKGA Registrations - Accounting</field>
+            <field name="name">Cost Overview</field>
             <field name="res_model">res.partner</field>
             <field name="view_mode">list</field>
             <field name="domain">[['is_registration', '=', True]]</field>

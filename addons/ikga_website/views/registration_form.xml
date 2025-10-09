@@ -37,7 +37,6 @@
                             <input id="regLastName" type="text" class="form-control" placeholder="Last Name"
                                    name="last_name" t-att-value="reg_last_name" required="True"/>
                         </div>
-
                         <div class="col col-3"/>
 
                     </div>
@@ -50,8 +49,7 @@
                             <input id="regBirthdate" type="date" class="form-control"
                                    name="birthdate" t-att-value="reg_birthdate" required="True"/>
                         </div>
-
-                        <div class="col col-5"/>
+                        <div class="col col-6"/>
 
                     </div>
                 </div>
@@ -146,7 +144,6 @@
                         <div class="col col-2">
                             <label for="regRoomType">Room Type</label>
                         </div>
-                        <!-- ToDo: evtl. verbreitern -->
                         <div class="col col-5">
                             <select class="form-control form-select form-inline" id="regRoomType" name="room_preference"
                                     required="True">
@@ -220,7 +217,6 @@
                                    placeholder="If any, please write down all allergens"
                                    t-att-value="reg_allergen_list"/>
                         </div>
-
                         <div class="col col-3"/>
                     </div>
                 </div>
@@ -250,20 +246,7 @@
                                        name="needs_shuttle"/>
                             </t>
                         </div>
-                        <div class="col col-2">
-                            <label for="regParkingLot">Do you need a parking lot?</label>
-                        </div>
-                        <div class="col col-1">
-                            <t t-if="reg_parking_lot">
-                                <input id="regParkingLot" type="checkbox" class="form-check-input"
-                                       name="needs_parking_lot" checked="True"/>
-                            </t>
-                            <t t-else="">
-                                <input id="regParkingLot" type="checkbox" class="form-check-input"
-                                       name="needs_parking_lot"/>
-                            </t>
-                        </div>
-                        <div class="col col-3"/>
+                        <div class="col col-6"/>
                     </div>
 
                     <!-- Airport -->
