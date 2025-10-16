@@ -43,7 +43,7 @@ class ResPartner(models.Model):
     updated = fields.Boolean('Updated', default=False)
 
     # compute price amounts
-    currency_id = fields.Many2one('res.currency', string='Currency')
+    currency_id = fields.Many2one('res.currency', string='Currency', readonly=False)
     amount_seminar = fields.Monetary('Seminar Fee', currency_field='currency_id')
     amount_hotel_room = fields.Monetary('Room & Board', currency_field='currency_id')
 
