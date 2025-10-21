@@ -25,7 +25,7 @@
                 <thead>
                     <tr class="active">
                         <th>Name</th>
-                        <th style="text-align: center">Seminar?</th>
+                        <th style="text-align: center">Training?</th>
                         <th>Grade</th>
                         <th>Room Type</th>
                         <th style="text-align: center">Vegan/Vegetarian</th>

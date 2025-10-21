@@ -43,7 +43,7 @@ class ResPartner(models.Model):
     updated = fields.Boolean('Updated', default=False)
 
     # compute price amounts
-    currency_id = fields.Many2one('res.currency', string='Currency')
+    currency_id = fields.Many2one(string='Currency', compute='_compute_currency')
     amount_seminar = fields.Monetary('Seminar Fee', currency_field='currency_id')
     amount_hotel_room = fields.Monetary('Room & Board', currency_field='currency_id')
 
@@ -74,6 +74,14 @@ class ResPartner(models.Model):
     def _compute_amount_total(self):
         for rec in self:
             rec.amount_total = rec.amount_seminar + rec.amount_hotel_room
+
+    @api.depends('is_registration', 'country_manager_id', 'specific_property_product_pricelist')
+    def _compute_currency(self):
+        for rec in self:
+            if rec.is_registration:
+                rec.currency_id = rec.country_manager_id.currency_id
+            else:
+                rec.currency_id = rec.specific_property_product_pricelist.currency_id
 
     def cron_action_export_backup(self):
         name_pattern = date.today().strftime('%Y-%m-%d_{}.csv')
