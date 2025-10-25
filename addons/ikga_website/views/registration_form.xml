@@ -26,7 +26,7 @@
                     </div>
                     <!-- Name -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <label for="regFirstName">Name</label>
                         </div>
                         <div class="col col-3">
@@ -37,19 +37,19 @@
                             <input id="regLastName" type="text" class="form-control" placeholder="Last Name"
                                    name="last_name" t-att-value="reg_last_name" required="True"/>
                         </div>
-                        <div class="col col-3"/>
+                        <div class="col col-2"/>
 
                     </div>
                     <!-- Birthdate -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <label for="regBirthdate">Birthdate</label>
                         </div>
                         <div class="col col-3">
                             <input id="regBirthdate" type="date" class="form-control"
                                    name="birthdate" t-att-value="reg_birthdate" required="True"/>
                         </div>
-                        <div class="col col-6"/>
+                        <div class="col col-5"/>
 
                     </div>
                 </div>
@@ -65,10 +65,10 @@
                     </div>
                     <!-- Participation -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-3">
+                        <div class="col col-4">
                             <label for="regSeminar">Do you participate in the training sessions?</label>
                         </div>
-                        <div class="col col-3">
+                        <div class="col col-4">
                             <t t-if="reg_seminar_participation">
                                 <input id="regSeminar" type="checkbox" class="form-check-input"
                                        name="participates_in_seminar" checked="True"/>
@@ -80,14 +80,14 @@
 
                         </div>
 
-                        <div class="col col-5"/>
+                        <div class="col col-2"/>
 
 
                     </div>
                     <!-- Grade -->
                     <div class="row mt-3">
-                        <div class="col col-3">
-                            <label for="regGradeNumber">Grade (only for Training Participants)</label>
+                        <div class="col col-4">
+                            <label for="regGradeNumber">Current Grade</label>
                         </div>
                         <div class="col col-2">
                             <select class="form-control form-select form-inline" id="regGradeNumber"
@@ -117,7 +117,7 @@
                                 </t>
                             </select>
                         </div>
-                        <div class="col col-5"/>
+                        <div class="col col-2"/>
                     </div>
                     <div class="row mb-3">
                         <div class="col col-10">
@@ -143,7 +143,7 @@
                         <div class="col col-2">
                             <label for="regRoomType">Room Type</label>
                         </div>
-                        <div class="col col-5">
+                        <div class="col col-6">
                             <select class="form-control form-select form-inline" id="regRoomType" name="room_preference"
                                     required="True">
                                 <t t-foreach="available_room_types" t-as="room_type">
@@ -161,7 +161,7 @@
                                 </t>
                             </select>
                         </div>
-                        <div class="col col-3"/>
+                        <div class="col col-2"/>
                     </div>
 
                     <!-- Vegetarian / Vegan / Allergies -->
@@ -211,12 +211,12 @@
                     </div>
 
                     <div class="row mt-1 mb-3">
-                        <div class="col col-7">
+                        <div class="col col-8">
                             <input id="regAllergens" type="text" class="form-control" name="allergen_list"
                                    placeholder="If any, please write down all allergens"
                                    t-att-value="reg_allergen_list"/>
                         </div>
-                        <div class="col col-3"/>
+                        <div class="col col-2"/>
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@
 
                     <!-- Shuttle Service | Parking Lot -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-3">
+                        <div class="col col-4">
                             <label for="regShuttle">Are you interested in our shuttle service?</label>
                         </div>
                         <div class="col col-1">
@@ -245,15 +245,15 @@
                                        name="needs_shuttle"/>
                             </t>
                         </div>
-                        <div class="col col-6"/>
+                        <div class="col col-5"/>
                     </div>
 
                     <!-- Airport -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <label for="regAirport">Airport</label>
                         </div>
-                        <div class="col col-3">
+                        <div class="col col-6">
                             <select class="form-control form-select form-inline" id="regArrivalAirport" name="airport">
                                 <t t-foreach="airports" t-as="a">
                                     <t t-if="a[0] == reg_airport">
@@ -270,31 +270,31 @@
                                 </t>
                             </select>
                         </div>
-                        <div class="col col-6"/>
+                        <div class="col col-2"/>
                     </div>
 
                     <!-- Arrival -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <label for="regArrivalTime">Arrival</label>
                         </div>
-                        <div class="col col-3">
+                        <div class="col col-6">
                             <input id="regArrivalTime" type="datetime-local" class="form-control"
                                    name="arrival_datetime" t-att-value="reg_arrival_datetime"/>
                         </div>
-                        <div class="col col-6"/>
+                        <div class="col col-2"/>
 
                     </div>
                     <!-- Departure -->
                     <div class="row mt-3 mb-3">
-                        <div class="col col-1">
+                        <div class="col col-2">
                             <label for="regDepartureTime">Departure</label>
                         </div>
-                        <div class="col col-3">
+                        <div class="col col-6">
                             <input id="regDepartureTime" type="datetime-local" class="form-control"
                                    name="departure_datetime" t-att-value="reg_departure_datetime"/>
                         </div>
-                        <div class="col col-6"/>
+                        <div class="col col-2"/>
                     </div>
                 </div>
 
