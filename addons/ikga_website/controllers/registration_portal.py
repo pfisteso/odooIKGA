@@ -54,7 +54,7 @@ class CustomerPortal(CustomerPortal):
                 # personal information
                 'reg_first_name': '',
                 'reg_last_name': '',
-                'reg_birthdate': date.fromisoformat('2000-01-01'),
+                'reg_birthdate': date.fromisoformat('2000-12-31'),
                 # seminar
                 'reg_seminar_participation': False,
                 'reg_grade_number': 1,
@@ -68,8 +68,8 @@ class CustomerPortal(CustomerPortal):
                 # travel
                 'reg_shuttle_service': False,
                 'reg_airport': 'NAN',
-                'reg_arrival_datetime': datetime.fromisoformat('2026-08-12T08:00:00'),  # ToDo: evtl. Zeitzone anpassen
-                'reg_departure_datetime': datetime.fromisoformat('2026-08-16T18:00:00'),# ToDo: evtl. Zeitzone anpassen
+                'reg_arrival_datetime': datetime.fromisoformat('2026-08-12T08:00:00'),
+                'reg_departure_datetime': datetime.fromisoformat('2026-08-16T18:00:00'),
                 'reg_parking_lot': False
             })
 
@@ -109,8 +109,8 @@ class CustomerPortal(CustomerPortal):
         if needs_shuttle:
             registration_vals.update({
                 'airport': airport,
-                'arrival_datetime': datetime.fromisoformat(arrival_datetime) - timedelta(hours=2),
-                'departure_datetime': datetime.fromisoformat(departure_datetime) - timedelta(hours=2)
+                'arrival_datetime': datetime.fromisoformat(arrival_datetime) - timedelta(hours=2),  # adjust timezone!
+                'departure_datetime': datetime.fromisoformat(departure_datetime) - timedelta(hours=2) # adjust timezone!
             })
 
         # fetch or create sale order and products
